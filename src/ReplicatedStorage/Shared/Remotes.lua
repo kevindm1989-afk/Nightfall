@@ -32,6 +32,9 @@ local REMOTE_FUNCTIONS = {
 	"GetData",        -- client -> server : ()           -> full sanitized snapshot
 	"ClaimDaily",     -- client -> server : ()           -> success, payload|errorMessage
 	"GetLeaderboard", -- client -> server : ()           -> { [boardKey] = { {Name, Value}, ... } }
+	"ClaimQuest",     -- client -> server : (questIndex) -> success, errorMessage
+	"ClaimPlaytime",  -- client -> server : (chestIndex) -> success, errorMessage
+	"DeletePet",      -- client -> server : (petUUID)    -> success, errorMessage
 }
 
 local FOLDER_NAME = "Remotes"

@@ -94,6 +94,9 @@ local function buildTierWeights(player: Player, eggConfig: any): { [string]: num
 		rareBoost *= data.LuckMultiplier
 	end
 
+	-- Live-ops event multiplier ("2x Luck Weekend" via config edit).
+	rareBoost *= GameConfig.Events.LuckMultiplier
+
 	if rareBoost ~= 1.0 then
 		for tier in pairs(GameConfig.RareTierSet) do
 			if weights[tier] then
@@ -349,6 +352,38 @@ function PetSystem.Init()
 		table.insert(data.EquippedPets, petUUID)
 		DataManager.PushToClient(player)
 		return true, "Equipped."
+	end
+
+	Remotes.DeletePet.OnServerInvoke = function(player: Player, petUUID: any)
+		if type(petUUID) ~= "string" then
+			return false, "Invalid request."
+		end
+		local data = DataManager.GetLoaded(player)
+		if not data then
+			return false, "Data still loading."
+		end
+
+		local ownedIndex: number? = nil
+		for index, pet in ipairs(data.OwnedPets) do
+			if pet.UUID == petUUID then
+				ownedIndex = index
+				break
+			end
+		end
+		if not ownedIndex then
+			return false, "You do not own that pet."
+		end
+
+		-- Unequip first so EquippedPets never holds a dangling UUID.
+		for index, uuid in ipairs(data.EquippedPets) do
+			if uuid == petUUID then
+				table.remove(data.EquippedPets, index)
+				break
+			end
+		end
+		table.remove(data.OwnedPets, ownedIndex)
+		DataManager.PushToClient(player)
+		return true, "Pet released."
 	end
 
 	Remotes.ToggleAutoHatch.OnServerEvent:Connect(function(player: Player, enabled: any)

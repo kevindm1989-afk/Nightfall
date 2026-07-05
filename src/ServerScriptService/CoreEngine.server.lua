@@ -29,6 +29,7 @@ local GameConfig = require(ReplicatedStorage:WaitForChild("Config"):WaitForChild
 local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
 local DataManager = require(script.Parent:WaitForChild("DataManager")).Init()
 local PetSystem = require(script.Parent:WaitForChild("PetSystem")).Init()
+local GameSignals = require(script.Parent:WaitForChild("GameSignals"))
 
 local SWING_COOLDOWN = GameConfig.Combat.SwingCooldown
 local MAX_HIT_DISTANCE = GameConfig.Combat.MaxHitDistance
@@ -140,6 +141,22 @@ local function computeDamage(player: Player): number
 	return weaponDamage + petBonus
 end
 
+-- [userId] = boolean, cached per session (IsInGroup hits a web API).
+local groupMemberCache: { [number]: boolean } = {}
+
+local function isGroupMember(player: Player): boolean
+	local cached = groupMemberCache[player.UserId]
+	if cached ~= nil then
+		return cached
+	end
+	local ok, result = pcall(function()
+		return player:IsInGroup(GameConfig.Group.GroupId)
+	end)
+	local member = ok and result == true
+	groupMemberCache[player.UserId] = member
+	return member
+end
+
 local function coinMultiplierFor(player: Player): number
 	local data = DataManager.GetLoaded(player)
 	if not data then
@@ -150,6 +167,12 @@ local function coinMultiplierFor(player: Player): number
 	if player.MembershipType == Enum.MembershipType.Premium then
 		multiplier *= GameConfig.PremiumCoinBonus
 	end
+	-- Group members earn bonus coins (drives group joins).
+	if isGroupMember(player) then
+		multiplier *= GameConfig.Group.CoinBonus
+	end
+	-- Live-ops event multiplier ("2x Coins Weekend" via config edit).
+	multiplier *= GameConfig.Events.CoinMultiplier
 	return multiplier
 end
 
@@ -246,6 +269,7 @@ local function killTarget(model: Model, state: any, killer: Player)
 				local gold = math.floor(state.Config.GoldReward * coinMultiplierFor(attacker))
 				DataManager.AddGold(attacker, gold)
 				grantBossLoot(attacker, state.Config, origin)
+				GameSignals.BossKilled:Fire(attacker)
 			end
 		end
 	else
@@ -254,6 +278,11 @@ local function killTarget(model: Model, state: any, killer: Player)
 		dropLootVisual(killer, origin, {
 			{ Item = "Gold_Burst", Type = "Gold", Amount = gold },
 		})
+		if state.Kind == "Node" then
+			GameSignals.NodeBroken:Fire(killer)
+		else
+			GameSignals.EnemyKilled:Fire(killer)
+		end
 	end
 	table.clear(state.LastAttackers)
 
@@ -484,6 +513,7 @@ end
 --------------------------------------------------------------------------------
 Players.PlayerRemoving:Connect(function(player)
 	lastSwing[player] = nil
+	groupMemberCache[player.UserId] = nil
 	for _, state in pairs(targets) do
 		state.LastAttackers[player] = nil
 	end

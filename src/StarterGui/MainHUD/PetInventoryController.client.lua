@@ -214,6 +214,39 @@ local function rebuild()
 			action.Active = true
 			-- DataChanged will rebuild the list.
 		end)
+
+		-- Delete (two-click confirm). Auto-hatch fills the 200-pet cap fast;
+		-- without this, a full inventory soft-locks all hatching.
+		local deleteButton = Instance.new("TextButton")
+		deleteButton.Size = UDim2.new(0, 44, 0, 36)
+		deleteButton.Position = UDim2.new(1, -172, 0.5, -18)
+		deleteButton.BackgroundColor3 = Color3.fromRGB(120, 60, 60)
+		deleteButton.Font = FONT
+		deleteButton.Text = "🗑"
+		deleteButton.TextColor3 = Color3.new(1, 1, 1)
+		deleteButton.TextScaled = true
+		deleteButton.Parent = card
+		round(deleteButton, 8)
+
+		local armed = false
+		deleteButton.MouseButton1Click:Connect(function()
+			if not armed then
+				armed = true
+				deleteButton.Text = "SURE?"
+				deleteButton.BackgroundColor3 = Color3.fromRGB(220, 80, 80)
+				task.delay(2, function()
+					if armed and deleteButton.Parent then
+						armed = false
+						deleteButton.Text = "🗑"
+						deleteButton.BackgroundColor3 = Color3.fromRGB(120, 60, 60)
+					end
+				end)
+				return
+			end
+			deleteButton.Active = false
+			Remotes.DeletePet:InvokeServer(pet.UUID)
+			-- DataChanged rebuilds the list.
+		end)
 	end
 
 	summary.Text = ("Equipped %d/%d  •  +%d dmg from pets  •  %d owned")

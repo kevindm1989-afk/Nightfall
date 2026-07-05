@@ -26,8 +26,12 @@ src/
 │   │                                        Egg Roll) + gamepass grants
 │   ├── DailyRewardManager.server.lua        7-day streak rewards (20h cadence,
 │   │                                        48h streak break, rebirth-scaled)
-│   └── LeaderboardManager.server.lua        Global OrderedDataStore top-10
-│                                            (Richest / Most Rebirths)
+│   ├── LeaderboardManager.server.lua        Global OrderedDataStore top-10
+│   │                                        (Richest / Most Rebirths)
+│   ├── GameSignals.lua          (Module)    Server event bus (NodeBroken,
+│   │                                        BossKilled, GoldEarned, ...)
+│   └── QuestManager.server.lua              Daily quests (deterministic per-day
+│                                            roll), playtime chests, group gems
 ├── StarterPlayerScripts/
 │   ├── LootAnimator.client.lua              3D loot burst → Bezier vacuum into
 │   │                                        the HumanoidRootPart
@@ -37,6 +41,8 @@ src/
 │   │                                        player (attribute-driven, local-only)
 │   ├── VFXController.client.lua             Damage numbers, hit sparks, kill
 │   │                                        bursts, camera pulse
+│   ├── WeaponVisualizer.client.lua          Held weapon in-hand for all players
+│   │                                        + slash tween on landed hits
 │   └── ZoneLightingController.client.lua    Per-biome lighting tweens + zone
 │                                            music crossfade (ZoneRegion parts)
 └── StarterGui/MainHUD/
@@ -44,9 +50,11 @@ src/
     │                                        MarketplaceService prompts, upsells
     ├── HatchAnimator.client.lua             Full-screen egg wobble/crack/reveal
     │                                        cutscene (queued, click-to-skip)
-    ├── PetInventoryController.client.lua    Pet list, equip/unequip, EQUIP BEST
+    ├── PetInventoryController.client.lua    Pet list, equip/unequip, EQUIP BEST,
+    │                                        two-click delete
     ├── DailyRewardController.client.lua     Streak calendar + glowing claim hook
     ├── LeaderboardController.client.lua     Global top-10 window
+    ├── QuestController.client.lua           Daily quests + playtime chest track
     └── ZoneTravelController.client.lua      World map: unlock zones + teleport
 docs/
 └── MapSpecifications.md                     4-biome lighting sheets, 60 mesh
@@ -60,14 +68,18 @@ docs/
 3. In Studio, enable **Game Settings → Security → Enable Studio Access to API
    Services** so DataStores work in test sessions.
 4. Create your Developer Products and Gamepasses on the Creator Dashboard,
-   then paste the live IDs into `GameConfig.Gamepasses` / `GameConfig.DeveloperProducts`.
+   then paste the live IDs into `GameConfig.Gamepasses` / `GameConfig.DeveloperProducts`,
+   and your Roblox group ID into `GameConfig.Group.GroupId`.
    (`VIPLuck` ships as `1234567` to match the PetSystem spec.)
 5. Build the map following the Workspace contract in `docs/MapSpecifications.md`
    (`Workspace/Zones/Zone<N>/{Nodes,Enemies,Boss}` with `NodeType` /
    `EnemyType` / `BossName` attributes and a PrimaryPart on every model).
-6. Optional: drop designer loot meshes into `ReplicatedStorage/LootMeshes`
-   named by loot id (`Gold_Small`, `ForestEgg_Free`, …) — the LootAnimator
-   falls back to glowing primitives until then.
+6. Optional: drop designer meshes into `ReplicatedStorage/LootMeshes`
+   (loot ids like `Gold_Small`), `ReplicatedStorage/PetMeshes` (`MDL_Pet_*`)
+   and `ReplicatedStorage/WeaponMeshes` (weapon keys like `MagmaEdge`) —
+   every renderer falls back to glowing primitives until then.
+7. Live-ops: run "2x Coins/Luck Weekend" events by editing `GameConfig.Events`
+   and republishing — no code changes needed.
 
 ## Player Data Contract
 

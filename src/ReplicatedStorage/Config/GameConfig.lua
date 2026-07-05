@@ -429,6 +429,57 @@ GameConfig.DailyRewardCooldown = 20 * 60 * 60      -- claimable every 20h
 GameConfig.DailyRewardStreakBreak = 48 * 60 * 60   -- streak resets after 48h
 
 --------------------------------------------------------------------------------
+-- DAILY QUESTS
+-- 3 quests per day, picked deterministically per player per UTC day (seeded by
+-- UserId + day key, so rejoining can never reroll them). Gold rewards scale
+-- x(1 + Rebirths). Progress types are fired through GameSignals.
+--------------------------------------------------------------------------------
+GameConfig.QuestsPerDay = 3
+GameConfig.QuestPool = {
+	{ Id = "break_nodes_s",  Type = "BreakNodes",  Goal = 40,    Text = "Break %d resource nodes",  Gold = 1200 },
+	{ Id = "break_nodes_l",  Type = "BreakNodes",  Goal = 120,   Text = "Break %d resource nodes",  Gems = 8 },
+	{ Id = "kill_enemies_s", Type = "KillEnemies", Goal = 15,    Text = "Defeat %d enemies",        Gold = 2000 },
+	{ Id = "kill_enemies_l", Type = "KillEnemies", Goal = 50,    Text = "Defeat %d enemies",        Gems = 10 },
+	{ Id = "kill_bosses",    Type = "KillBosses",  Goal = 3,     Text = "Defeat %d zone bosses",    Gems = 12 },
+	{ Id = "hatch_eggs_s",   Type = "HatchEggs",   Goal = 8,     Text = "Hatch %d eggs",            Gold = 1800 },
+	{ Id = "hatch_eggs_l",   Type = "HatchEggs",   Goal = 25,    Text = "Hatch %d eggs",            Gems = 10 },
+	{ Id = "earn_gold",      Type = "EarnGold",    Goal = 20000, Text = "Earn %d Gold",             Gems = 8 },
+}
+
+--------------------------------------------------------------------------------
+-- PLAYTIME CHESTS (per-session reward track; the classic session extender)
+--------------------------------------------------------------------------------
+GameConfig.PlaytimeRewards = {
+	{ Minutes = 5,  Gold = 500 },
+	{ Minutes = 10, Gems = 5 },
+	{ Minutes = 20, Gold = 2500 },
+	{ Minutes = 30, Gems = 10 },
+	{ Minutes = 45, Gold = 10000 },
+	{ Minutes = 60, Gems = 25, EggRoll = "RoyalEgg" },
+}
+
+--------------------------------------------------------------------------------
+-- GROUP REWARD (drives group joins -> algorithm visibility + community)
+-- Replace GroupId with your live Roblox group.
+--------------------------------------------------------------------------------
+GameConfig.Group = {
+	GroupId = 1234321,
+	CoinBonus = 1.10,       -- +10% coins while a member
+	DailyGems = 5,          -- auto-granted once per 24h on join
+}
+
+--------------------------------------------------------------------------------
+-- LIVE-OPS EVENTS
+-- Edit + publish to run "2x Coins Weekend" / "Luck Event" with zero code
+-- changes. Name is shown in the HUD toast on join when an event is active.
+--------------------------------------------------------------------------------
+GameConfig.Events = {
+	Name = "",              -- e.g. "2x LUCK WEEKEND!"
+	CoinMultiplier = 1.0,   -- multiplies all gold payouts
+	LuckMultiplier = 1.0,   -- multiplies Rare/Epic/Mythic hatch weights
+}
+
+--------------------------------------------------------------------------------
 -- LEADERBOARDS
 --------------------------------------------------------------------------------
 GameConfig.Leaderboards = {

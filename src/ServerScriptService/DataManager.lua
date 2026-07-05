@@ -30,6 +30,7 @@ local HttpService = game:GetService("HttpService")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
+local GameSignals = require(script.Parent:WaitForChild("GameSignals"))
 
 local DATASTORE_NAME = "PlayerData_V1"
 local KEY_PREFIX = "Player_"
@@ -77,6 +78,11 @@ local DEFAULT_DATA = {
 	-- Daily reward streak
 	LastDailyClaim = 0,
 	DailyStreak = 0,
+
+	-- Daily quests: { Key = "YYYY-ddd", Quests = { {Id, Type, Goal, Progress,
+	-- Gold?, Gems?, Claimed}, ... } } (rotated by QuestManager)
+	DailyQuests = { Key = "", Quests = {} },
+	LastGroupGrant = 0,
 
 	-- Bookkeeping
 	TotalGoldEarned = 0,
@@ -274,6 +280,7 @@ local function snapshotFor(data: any): any
 		StarterPackPurchased = data.StarterPackPurchased,
 		LastDailyClaim = data.LastDailyClaim,
 		DailyStreak = data.DailyStreak,
+		DailyQuests = deepCopy(data.DailyQuests),
 	}
 end
 
@@ -292,6 +299,8 @@ local function publishEquippedPets(player: Player, data: any)
 		end
 	end
 	player:SetAttribute("EquippedPetNames", table.concat(names, ","))
+	-- WeaponVisualizer reads this to render the held weapon on every client.
+	player:SetAttribute("EquippedWeaponName", data.EquippedWeapon)
 end
 
 function DataManager.PushToClient(player: Player)
@@ -350,6 +359,7 @@ function DataManager.AddGold(player: Player, amount: number)
 	data.Gold = math.max(0, math.floor(data.Gold + amount))
 	if amount > 0 then
 		data.TotalGoldEarned += math.floor(amount)
+		GameSignals.GoldEarned:Fire(player, math.floor(amount))
 	end
 	DataManager.PushToClient(player)
 end
@@ -390,6 +400,7 @@ function DataManager.GrantPet(player: Player, petName: string, statBonus: number
 	}
 	table.insert(data.OwnedPets, entry)
 	data.TotalHatches += 1
+	GameSignals.PetObtained:Fire(player, petName)
 	DataManager.PushToClient(player)
 	return entry
 end
