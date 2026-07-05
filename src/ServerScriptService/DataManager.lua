@@ -84,6 +84,14 @@ local DEFAULT_DATA = {
 	DailyQuests = { Key = "", Quests = {} },
 	LastGroupGrant = 0,
 
+	-- Offline earnings
+	LastLogout = 0,
+	PendingOfflineBonus = 0, -- amount eligible for the 2x Robux double-up
+
+	-- Awarded badge keys (mirrors BadgeService so we never re-call the API)
+	BadgesAwarded = {},
+	TotalFusions = 0,
+
 	-- Bookkeeping
 	TotalGoldEarned = 0,
 	TotalHatches = 0,
@@ -295,7 +303,13 @@ local function publishEquippedPets(player: Player, data: any)
 	for _, uuid in ipairs(data.EquippedPets) do
 		local pet = byUUID[uuid]
 		if pet then
-			table.insert(names, pet.PetName)
+			-- Encode variant for non-Normal pets: "ShardWolf:Golden"
+			local variant = pet.Variant
+			if variant and variant ~= "Normal" then
+				table.insert(names, pet.PetName .. ":" .. variant)
+			else
+				table.insert(names, pet.PetName)
+			end
 		end
 	end
 	player:SetAttribute("EquippedPetNames", table.concat(names, ","))
@@ -385,8 +399,9 @@ function DataManager.TrySpend(player: Player, currency: string, amount: number):
 	return true
 end
 
--- Grants a pet entry with a collision-proof UUID. Returns the entry or nil if full.
-function DataManager.GrantPet(player: Player, petName: string, statBonus: number): any?
+-- Grants a pet entry with a collision-proof UUID. Returns the entry or nil if
+-- full. variant defaults to "Normal"; fusion passes "Golden"/"Rainbow".
+function DataManager.GrantPet(player: Player, petName: string, statBonus: number, variant: string?): any?
 	local data = DataManager.GetLoaded(player)
 	if not data then return nil end
 	if #data.OwnedPets >= GameConfig.Combat.MaxOwnedPets then
@@ -397,6 +412,7 @@ function DataManager.GrantPet(player: Player, petName: string, statBonus: number
 		UUID = HttpService:GenerateGUID(false),
 		PetName = petName,
 		StatBonus = statBonus,
+		Variant = variant or "Normal",
 	}
 	table.insert(data.OwnedPets, entry)
 	data.TotalHatches += 1
@@ -474,6 +490,7 @@ local function onPlayerRemoving(player: Player)
 	local session = sessions[player]
 	sessions[player] = nil
 	if session and session.Loaded then
+		session.Data.LastLogout = os.time() -- OfflineEarningsManager reads this on next join
 		local ok = saveProfile(player.UserId, session.SessionId, session.Data, false)
 		print(("[DataManager] Released profile for %s (saved=%s)"):format(player.Name, tostring(ok)))
 	end

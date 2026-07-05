@@ -20,6 +20,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local GameConfig = require(ReplicatedStorage:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes"))
 local DataManager = require(script.Parent:WaitForChild("DataManager"))
+local GameSignals = require(script.Parent:WaitForChild("GameSignals"))
 
 local VIP_LUCK_GAMEPASS_ID = 1234567
 local VIP_LUCK_RARE_MULTIPLIER = 1.5
@@ -269,6 +270,17 @@ function PetSystem.ConsumePendingEggRoll(player: Player): (any?, string?)
 end
 
 --------------------------------------------------------------------------------
+-- EQUIP CAPACITY (base 4, +2 with the Pet Slots gamepass)
+--------------------------------------------------------------------------------
+function PetSystem.MaxEquippedFor(player: Player): number
+	local cap = GameConfig.Combat.MaxEquippedPets
+	if PetSystem.PlayerOwnsGamepass(player, GameConfig.Gamepasses.PetSlots.Id) then
+		cap += GameConfig.Gamepasses.PetSlots.Effect.ExtraPetSlots
+	end
+	return cap
+end
+
+--------------------------------------------------------------------------------
 -- DAMAGE CONTRIBUTION (consumed by CoreEngine)
 --------------------------------------------------------------------------------
 function PetSystem.GetEquippedStatBonus(player: Player): number
@@ -282,17 +294,99 @@ function PetSystem.GetEquippedStatBonus(player: Player): number
 	end
 	local total = 0
 	local counted = 0
+	local cap = PetSystem.MaxEquippedFor(player)
 	for _, uuid in ipairs(data.EquippedPets) do
 		local pet = byUUID[uuid]
 		if pet then
 			total += pet.StatBonus
 			counted += 1
-			if counted >= GameConfig.Combat.MaxEquippedPets then
+			if counted >= cap then
 				break
 			end
 		end
 	end
 	return total
+end
+
+--------------------------------------------------------------------------------
+-- FUSION: 5 same-name, same-variant pets + gems -> 1 upgraded variant
+--------------------------------------------------------------------------------
+function PetSystem.FusePets(player: Player, petName: string, targetVariant: string): (any?, string?)
+	local variantConfig = GameConfig.Fusion.Variants[targetVariant]
+	if not variantConfig then
+		return nil, "Unknown fusion."
+	end
+	local petConfig = GameConfig.Pets[petName]
+	if not petConfig then
+		return nil, "Unknown pet."
+	end
+	local data = DataManager.GetLoaded(player)
+	if not data then
+		return nil, "Data still loading."
+	end
+
+	-- Collect candidates of the source variant.
+	local sourceVariant = variantConfig.From
+	local candidates = {}
+	for index, pet in ipairs(data.OwnedPets) do
+		local variant = pet.Variant or "Normal"
+		if pet.PetName == petName and variant == sourceVariant then
+			table.insert(candidates, { Index = index, Pet = pet })
+		end
+	end
+	if #candidates < GameConfig.Fusion.Required then
+		return nil, ("Need %d %s %s (have %d).")
+			:format(GameConfig.Fusion.Required, sourceVariant, petName, #candidates)
+	end
+
+	if not DataManager.TrySpend(player, "Gems", variantConfig.GemCost) then
+		return nil, ("Fusion costs %d Gems."):format(variantConfig.GemCost)
+	end
+
+	-- Consume exactly Required copies (highest indices first so table.remove
+	-- doesn't shift the pending ones), unequipping as we go. No yields between
+	-- the spend, the removal and the grant: the operation is atomic.
+	local toConsume = {}
+	for i = 1, GameConfig.Fusion.Required do
+		table.insert(toConsume, candidates[i])
+	end
+	table.sort(toConsume, function(a, b)
+		return a.Index > b.Index
+	end)
+	for _, item in ipairs(toConsume) do
+		for equippedIndex, uuid in ipairs(data.EquippedPets) do
+			if uuid == item.Pet.UUID then
+				table.remove(data.EquippedPets, equippedIndex)
+				break
+			end
+		end
+		table.remove(data.OwnedPets, item.Index)
+	end
+
+	local newStat = math.floor(petConfig.StatBonus * variantConfig.Multiplier)
+	local entry = DataManager.GrantPet(player, petName, newStat, targetVariant)
+	if not entry then
+		-- Inventory can't be full (we just removed 5) — but never eat gems.
+		DataManager.AddGems(player, variantConfig.GemCost)
+		return nil, "Fusion failed, gems refunded."
+	end
+
+	data.TotalFusions += 1
+	GameSignals.PetFused:Fire(player, petName, targetVariant)
+	DataManager.PushToClient(player)
+
+	local reveal = {
+		UUID = entry.UUID,
+		PetName = petName,
+		Tier = petConfig.Tier,
+		StatBonus = newStat,
+		Variant = targetVariant,
+	}
+	Remotes.PetHatched:FireClient(player, reveal) -- reuse the hatch cutscene
+	Remotes.NotifyText:FireClient(player,
+		("FUSED: %s %s (+%d dmg)!"):format(targetVariant, petName, newStat),
+		variantConfig.Color)
+	return reveal, nil
 end
 
 --------------------------------------------------------------------------------
@@ -345,13 +439,21 @@ function PetSystem.Init()
 		if not owns then
 			return false, "You do not own that pet."
 		end
-		if #data.EquippedPets >= GameConfig.Combat.MaxEquippedPets then
-			return false, "Max " .. GameConfig.Combat.MaxEquippedPets .. " pets equipped."
+		local cap = PetSystem.MaxEquippedFor(player)
+		if #data.EquippedPets >= cap then
+			return false, "Max " .. cap .. " pets equipped."
 		end
 
 		table.insert(data.EquippedPets, petUUID)
 		DataManager.PushToClient(player)
 		return true, "Equipped."
+	end
+
+	Remotes.FusePets.OnServerInvoke = function(player: Player, petName: any, targetVariant: any)
+		if type(petName) ~= "string" or type(targetVariant) ~= "string" then
+			return nil, "Invalid request."
+		end
+		return PetSystem.FusePets(player, petName, targetVariant)
 	end
 
 	Remotes.DeletePet.OnServerInvoke = function(player: Player, petUUID: any)

@@ -466,6 +466,7 @@ Remotes.UnlockZone.OnServerInvoke = function(player: Player, zoneId: any)
 	end
 	data.UnlockedZones[zoneId] = true
 	data.CurrentZone = zoneId
+	GameSignals.ZoneUnlocked:Fire(player, zoneId)
 	DataManager.PushToClient(player)
 	Remotes.NotifyText:FireClient(player,
 		zoneConfig.Name .. " unlocked!", Color3.fromRGB(120, 255, 140))
@@ -500,6 +501,7 @@ Remotes.Rebirth.OnServerInvoke = function(player: Player)
 		data.CoinMultiplier *= GameConfig.Gamepasses.DoubleCoins.Effect.CoinMultiplier
 	end
 
+	GameSignals.Rebirthed:Fire(player, data.Rebirths)
 	DataManager.PushToClient(player)
 	Remotes.NotifyText:FireClient(player,
 		("Rebirth %d! Coins x%.1f, Luck x%.1f"):format(

@@ -44,7 +44,11 @@ container.Parent = workspace.CurrentCamera
 --------------------------------------------------------------------------------
 -- MODEL CONSTRUCTION
 --------------------------------------------------------------------------------
-local function buildPetModel(petName: string): BasePart
+local function buildPetModel(entry: string): BasePart
+	-- Entry format: "PetName" or "PetName:Golden" / "PetName:Rainbow"
+	local parts = string.split(entry, ":")
+	local petName = parts[1]
+	local variant = parts[2] or "Normal"
 	local petConfig = GameConfig.Pets[petName]
 	local template = petMeshFolder and petConfig and petMeshFolder:FindFirstChild(petConfig.Mesh)
 
@@ -67,6 +71,15 @@ local function buildPetModel(petName: string): BasePart
 	part.CanTouch = false
 	part.CastShadow = false
 
+	-- Fusion variants override the body color; Rainbow hue-cycles per frame.
+	if variant == "Golden" then
+		part.Color = GameConfig.Fusion.Variants.Golden.Color
+		part.Material = Enum.Material.Neon
+	elseif variant == "Rainbow" then
+		part.Material = Enum.Material.Neon
+		part:SetAttribute("RainbowPet", true)
+	end
+
 	-- Name tag with tier color.
 	local billboard = Instance.new("BillboardGui")
 	billboard.Size = UDim2.fromScale(5, 1)
@@ -77,9 +90,10 @@ local function buildPetModel(petName: string): BasePart
 	tag.Size = UDim2.fromScale(1, 1)
 	tag.BackgroundTransparency = 1
 	tag.Font = Enum.Font.FredokaOne
-	tag.Text = petName
+	tag.Text = if variant ~= "Normal" then (variant .. " " .. petName) else petName
 	tag.TextScaled = true
-	tag.TextColor3 = (petConfig and tierColors[petConfig.Tier]) or Color3.new(1, 1, 1)
+	tag.TextColor3 = if variant == "Golden" then GameConfig.Fusion.Variants.Golden.Color
+		else (petConfig and tierColors[petConfig.Tier]) or Color3.new(1, 1, 1)
 	tag.TextStrokeTransparency = 0.4
 	tag.Parent = billboard
 	billboard.Parent = part
@@ -116,9 +130,10 @@ local function rebuildFor(player: Player)
 
 	local names = string.split(csv, ",")
 	local models = {}
-	for _, petName in ipairs(names) do
+	for _, entry in ipairs(names) do
+		local petName = string.split(entry, ":")[1]
 		if GameConfig.Pets[petName] then
-			table.insert(models, buildPetModel(petName))
+			table.insert(models, buildPetModel(entry))
 		end
 	end
 	followers[player] = { Models = models, Names = names }
@@ -152,6 +167,7 @@ end)
 RunService.RenderStepped:Connect(function(dt)
 	local now = os.clock()
 	local alpha = math.clamp(FOLLOW_LERP * dt, 0, 1)
+	local rainbowHue = (now * 0.5) % 1
 
 	for player, state in pairs(followers) do
 		local character = player.Character
@@ -170,6 +186,10 @@ RunService.RenderStepped:Connect(function(dt)
 
 			local bob = math.sin(now * BOB_SPEED + index * 1.3) * BOB_HEIGHT
 			local goal = slot + Vector3.new(0, 1.5 + bob, 0)
+
+			if model:GetAttribute("RainbowPet") then
+				model.Color = Color3.fromHSV((rainbowHue + index * 0.15) % 1, 0.85, 1)
+			end
 
 			local newPosition = model.Position:Lerp(goal, alpha)
 			local look = root.Position - newPosition

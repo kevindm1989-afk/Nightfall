@@ -33,6 +33,12 @@ GameConfig.Gamepasses = {
 		Description = "Automatically re-hatches your last egg every 3 seconds. AFK-friendly!",
 		Effect = { AutoHatch = true },
 	},
+	PetSlots = {
+		Id = 7654324,
+		Name = "+2 Pet Slots",
+		Description = "Equip 6 pets at once instead of 4 — permanently boosts your damage!",
+		Effect = { ExtraPetSlots = 2 },
+	},
 }
 
 GameConfig.DeveloperProducts = {
@@ -93,6 +99,14 @@ GameConfig.DeveloperProducts = {
 		-- Grants one hatch from the premium "MegaEgg" table (see Eggs below).
 		Grant = { EggRoll = "MegaEgg" },
 		Order = 8,
+	},
+	OfflineDouble = {
+		Id = 1111119,
+		Name = "2x Offline Earnings",
+		Description = "Doubles the Gold you just earned while away. Prompted contextually only.",
+		Grant = { OfflineDouble = true },
+		Hidden = true, -- not listed in the shop; prompted from the welcome-back popup
+		Order = 99,
 	},
 }
 
@@ -477,6 +491,57 @@ GameConfig.Events = {
 	Name = "",              -- e.g. "2x LUCK WEEKEND!"
 	CoinMultiplier = 1.0,   -- multiplies all gold payouts
 	LuckMultiplier = 1.0,   -- multiplies Rare/Epic/Mythic hatch weights
+}
+
+--------------------------------------------------------------------------------
+-- PET FUSION
+-- 5 copies of the same pet + a gem fee -> 1 upgraded variant.
+--   Normal x5 -> Golden  (StatBonus x2.5)
+--   Golden x5 -> Rainbow (StatBonus x6.25 of base)
+-- Deep gem sink + the long-term chase that keeps whales hatching.
+--------------------------------------------------------------------------------
+GameConfig.Fusion = {
+	Required = 5,
+	Variants = {
+		Golden  = { From = "Normal", Multiplier = 2.5,  GemCost = 25,
+			Color = Color3.fromRGB(255, 200, 40) },
+		Rainbow = { From = "Golden", Multiplier = 6.25, GemCost = 100,
+			Color = Color3.fromRGB(255, 255, 255) }, -- rendered as animated hue cycle
+	},
+}
+
+--------------------------------------------------------------------------------
+-- TRADING
+--------------------------------------------------------------------------------
+GameConfig.Trading = {
+	MaxPetsPerSide = 6,
+	ConfirmCountdownSeconds = 3, -- final anti-scam countdown after both confirm
+}
+
+--------------------------------------------------------------------------------
+-- OFFLINE EARNINGS (welcome-back hook + 2x Robux upsell)
+-- Gold/minute by best unlocked zone, scaled x(1 + 0.5 x Rebirths), capped.
+--------------------------------------------------------------------------------
+GameConfig.Offline = {
+	CapHours = 8,
+	MinimumMinutes = 5,
+	GoldPerMinuteByZone = {
+		[1] = 25,
+		[2] = 700,
+		[3] = 12000,
+		[4] = 200000,
+	},
+}
+
+--------------------------------------------------------------------------------
+-- BADGES (create on the Creator Dashboard, paste live IDs; 0 = disabled)
+--------------------------------------------------------------------------------
+GameConfig.Badges = {
+	FirstRebirth  = { Id = 0, Name = "Born Again" },        -- first rebirth
+	FirstMythic   = { Id = 0, Name = "Mythic Hunter" },     -- hatch any Mythic pet
+	AbyssWalker   = { Id = 0, Name = "Abyss Walker" },      -- unlock Zone 4
+	HundredHatch  = { Id = 0, Name = "Egg Addict" },        -- 100 total hatches
+	FirstFusion   = { Id = 0, Name = "Alchemist" },         -- first pet fusion
 }
 
 --------------------------------------------------------------------------------

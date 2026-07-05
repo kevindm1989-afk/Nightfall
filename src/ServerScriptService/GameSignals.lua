@@ -44,8 +44,11 @@ local GameSignals = {
 	NodeBroken = Signal.new(),
 	EnemyKilled = Signal.new(),
 	BossKilled = Signal.new(),
-	PetObtained = Signal.new(),
-	GoldEarned = Signal.new(),
+	PetObtained = Signal.new(),  -- (player, petName)
+	GoldEarned = Signal.new(),   -- (player, amount)
+	Rebirthed = Signal.new(),    -- (player, rebirthCount)
+	ZoneUnlocked = Signal.new(), -- (player, zoneId)
+	PetFused = Signal.new(),     -- (player, petName, variant)
 }
 
 return GameSignals

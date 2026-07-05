@@ -30,8 +30,15 @@ src/
 │   │                                        (Richest / Most Rebirths)
 │   ├── GameSignals.lua          (Module)    Server event bus (NodeBroken,
 │   │                                        BossKilled, GoldEarned, ...)
-│   └── QuestManager.server.lua              Daily quests (deterministic per-day
-│                                            roll), playtime chests, group gems
+│   ├── QuestManager.server.lua              Daily quests (deterministic per-day
+│   │                                        roll), playtime chests, group gems
+│   ├── TradeManager.server.lua              Secure pet trading: session locks,
+│   │                                        confirm resets, 3s countdown,
+│   │                                        atomic swap + force-save both sides
+│   ├── OfflineEarningsManager.server.lua    Welcome-back gold (8h cap) + banks
+│   │                                        the amount for the 2x Robux upsell
+│   └── BadgeManager.server.lua              Milestone badges via GameSignals
+│                                            (rebirth, mythic, zone 4, fusion)
 ├── StarterPlayerScripts/
 │   ├── LootAnimator.client.lua              3D loot burst → Bezier vacuum into
 │   │                                        the HumanoidRootPart
@@ -55,6 +62,11 @@ src/
     ├── DailyRewardController.client.lua     Streak calendar + glowing claim hook
     ├── LeaderboardController.client.lua     Global top-10 window
     ├── QuestController.client.lua           Daily quests + playtime chest track
+    ├── FusionController.client.lua          Fusion lab: 5x pet + gems -> Golden
+    │                                        / Rainbow variants (opens from Pets)
+    ├── TradeController.client.lua           Player list, request banner, live
+    │                                        trade window with offer grid
+    ├── OfflineController.client.lua         Welcome-back popup + DOUBLE IT R$
     └── ZoneTravelController.client.lua      World map: unlock zones + teleport
 docs/
 └── MapSpecifications.md                     4-biome lighting sheets, 60 mesh
@@ -80,6 +92,8 @@ docs/
    every renderer falls back to glowing primitives until then.
 7. Live-ops: run "2x Coins/Luck Weekend" events by editing `GameConfig.Events`
    and republishing — no code changes needed.
+8. Create the five milestone badges on the Creator Dashboard and paste their
+   IDs into `GameConfig.Badges` (IDs of 0 are skipped silently).
 
 ## Player Data Contract
 

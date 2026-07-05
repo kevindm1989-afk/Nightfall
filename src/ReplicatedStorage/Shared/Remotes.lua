@@ -20,6 +20,9 @@ local REMOTE_EVENTS = {
 	"NotifyText",     -- server -> client : (message, color) toast messages
 	"ToggleAutoHatch",-- client -> server : (enabled)       auto-hatch preference
 	"TargetDamaged",  -- server -> client : (hitPayload)    damage numbers / hit VFX
+	"TradeRequested", -- server -> client : (requesterName) incoming trade request
+	"TradeUpdated",   -- server -> client : (sessionState | nil) live trade window state
+	"OfflineReport",  -- server -> client : ({Amount})      welcome-back earnings popup
 }
 
 local REMOTE_FUNCTIONS = {
@@ -35,6 +38,12 @@ local REMOTE_FUNCTIONS = {
 	"ClaimQuest",     -- client -> server : (questIndex) -> success, errorMessage
 	"ClaimPlaytime",  -- client -> server : (chestIndex) -> success, errorMessage
 	"DeletePet",      -- client -> server : (petUUID)    -> success, errorMessage
+	"FusePets",       -- client -> server : (petName, targetVariant) -> success, msg|petInfo
+	"TradeRequest",   -- client -> server : (targetUserId) -> success, errorMessage
+	"TradeRespond",   -- client -> server : (requesterUserId, accept) -> success, errorMessage
+	"TradeSetOffer",  -- client -> server : ({uuids})    -> success, errorMessage
+	"TradeConfirm",   -- client -> server : ()           -> success, errorMessage
+	"TradeCancel",    -- client -> server : ()           -> success
 }
 
 local FOLDER_NAME = "Remotes"

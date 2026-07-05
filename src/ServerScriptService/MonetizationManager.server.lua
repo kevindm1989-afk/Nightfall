@@ -55,6 +55,21 @@ local function grantProduct(player: Player, productInfo: any): boolean
 	end
 
 	local grant = productInfo.Grant
+	if grant.OfflineDouble then
+		-- Contextual product: pays out whatever offline gold was just banked.
+		local bonus = data.PendingOfflineBonus or 0
+		if bonus > 0 then
+			data.PendingOfflineBonus = 0
+			DataManager.AddGold(player, bonus)
+			Remotes.NotifyText:FireClient(player,
+				("Offline earnings doubled: +%d Gold!"):format(bonus),
+				Color3.fromRGB(255, 220, 90))
+		else
+			-- Nothing pending (double-buy race): consolation gems, never nothing.
+			DataManager.AddGems(player, 10)
+		end
+		return true
+	end
 	if grant.Gold then
 		DataManager.AddGold(player, grant.Gold)
 	end

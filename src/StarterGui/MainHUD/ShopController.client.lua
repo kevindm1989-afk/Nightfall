@@ -257,7 +257,9 @@ do
 	-- new packs added to GameConfig appear here with zero UI changes.
 	local productList = {}
 	for _, product in pairs(GameConfig.DeveloperProducts) do
-		table.insert(productList, product)
+		if not product.Hidden then -- contextual products (OfflineDouble) stay out of the shop
+			table.insert(productList, product)
+		end
 	end
 	table.sort(productList, function(a, b)
 		return (a.Order or 99) < (b.Order or 99)
@@ -302,6 +304,7 @@ do
 		GameConfig.Gamepasses.DoubleCoins,
 		GameConfig.Gamepasses.VIPLuck,
 		GameConfig.Gamepasses.AutoHatch,
+		GameConfig.Gamepasses.PetSlots,
 	}
 	for _, pass in ipairs(passList) do
 		order += 1

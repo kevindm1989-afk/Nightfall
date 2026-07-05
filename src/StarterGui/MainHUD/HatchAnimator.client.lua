@@ -127,6 +127,11 @@ local function playReveal(reveal: any)
 	skipRequested = false
 	local tier = tostring(reveal.Tier)
 	local color = tierColors[tier] or Color3.new(1, 1, 1)
+	-- Fusion results reuse this cutscene: variant color wins over tier color.
+	local variantConfig = reveal.Variant and GameConfig.Fusion.Variants[reveal.Variant]
+	if variantConfig then
+		color = variantConfig.Color
+	end
 
 	backdrop.Visible = true
 	eggLabel.Visible = true
@@ -173,7 +178,9 @@ local function playReveal(reveal: any)
 		Size = UDim2.fromOffset(150, 150),
 	}):Play()
 
-	nameLabel.Text = tostring(reveal.PetName)
+	nameLabel.Text = if variantConfig
+		then (tostring(reveal.Variant) .. " " .. tostring(reveal.PetName))
+		else tostring(reveal.PetName)
 	nameLabel.TextColor3 = color
 	nameLabel.Visible = true
 	statLabel.Text = ("%s  •  +%d Damage"):format(tier:upper(), tonumber(reveal.StatBonus) or 0)

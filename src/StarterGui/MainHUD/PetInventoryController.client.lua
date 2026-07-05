@@ -155,6 +155,8 @@ local function rebuild()
 	for index, pet in ipairs(pets) do
 		local petConfig = GameConfig.Pets[pet.PetName]
 		local tier = petConfig and petConfig.Tier or "Common"
+		local variant = pet.Variant or "Normal"
+		local variantConfig = GameConfig.Fusion.Variants[variant]
 		local equipped = isEquipped(pet.UUID)
 		if equipped then
 			equippedCount += 1
@@ -180,8 +182,12 @@ local function rebuild()
 		nameLabel.Position = UDim2.new(0, 16, 0, 4)
 		nameLabel.BackgroundTransparency = 1
 		nameLabel.Font = FONT
-		nameLabel.Text = tostring(pet.PetName)
-		nameLabel.TextColor3 = tierColors[tier] or Color3.new(1, 1, 1)
+		nameLabel.Text = if variant ~= "Normal"
+			then (variant .. " " .. tostring(pet.PetName))
+			else tostring(pet.PetName)
+		nameLabel.TextColor3 = if variantConfig
+			then variantConfig.Color
+			else (tierColors[tier] or Color3.new(1, 1, 1))
 		nameLabel.TextScaled = true
 		nameLabel.TextXAlignment = Enum.TextXAlignment.Left
 		nameLabel.Parent = card
