@@ -34,39 +34,56 @@ local PetSystem = require(script.Parent:WaitForChild("PetSystem")).Init()
 -- PRODUCT HANDLER TABLE
 -- [productId] = function(player) -> boolean success
 --------------------------------------------------------------------------------
+-- Every product is defined purely by its Grant table in GameConfig, so adding
+-- a new pack is a config edit, not a code change.
 local productHandlers: { [number]: (Player) -> boolean } = {}
 
-productHandlers[GameConfig.DeveloperProducts.Coins100.Id] = function(player)
-	DataManager.AddGold(player, GameConfig.DeveloperProducts.Coins100.Grant.Gold)
-	Remotes.NotifyText:FireClient(player, "+100 Coins purchased!", Color3.fromRGB(255, 220, 90))
-	return true
-end
-
-productHandlers[GameConfig.DeveloperProducts.Coins500.Id] = function(player)
-	DataManager.AddGold(player, GameConfig.DeveloperProducts.Coins500.Grant.Gold)
-	Remotes.NotifyText:FireClient(player, "+500 Coins purchased!", Color3.fromRGB(255, 220, 90))
-	return true
-end
-
-productHandlers[GameConfig.DeveloperProducts.MegaEggRoll.Id] = function(player)
-	-- Bank the roll first (crash-safe), then consume it immediately.
+local function grantProduct(player: Player, productInfo: any): boolean
 	local data = DataManager.GetLoaded(player)
 	if not data then
 		return false
 	end
-	data.PendingEggRolls += 1
-	DataManager.PushToClient(player)
-	task.spawn(function()
-		local reveal = PetSystem.ConsumePendingEggRoll(player)
-		if reveal then
-			Remotes.NotifyText:FireClient(player,
-				"Mega Egg hatched: " .. reveal.PetName .. " (" .. reveal.Tier .. ")!",
-				Color3.fromRGB(255, 170, 0))
-		end
-		-- If the hatch failed (e.g. full inventory) the roll stays banked in
-		-- PendingEggRolls and the player can trigger it later from the shop.
-	end)
+
+	if productInfo.OneTime and data.StarterPackPurchased then
+		-- Bought twice via a race or website: convert to a gem consolation
+		-- instead of silently eating the Robux.
+		DataManager.AddGems(player, 25)
+		Remotes.NotifyText:FireClient(player,
+			"Starter Pack already owned — granted 25 Gems instead.",
+			Color3.fromRGB(90, 220, 255))
+		return true
+	end
+
+	local grant = productInfo.Grant
+	if grant.Gold then
+		DataManager.AddGold(player, grant.Gold)
+	end
+	if grant.Gems then
+		DataManager.AddGems(player, grant.Gems)
+	end
+	if grant.EggRoll then
+		-- Bank the roll first (crash-safe), then consume it immediately. If the
+		-- hatch fails (full inventory) the roll stays banked in PendingEggRolls.
+		data.PendingEggRolls += 1
+		DataManager.PushToClient(player)
+		task.spawn(function()
+			PetSystem.ConsumePendingEggRoll(player)
+		end)
+	end
+	if productInfo.OneTime then
+		data.StarterPackPurchased = true
+		DataManager.PushToClient(player)
+	end
+
+	Remotes.NotifyText:FireClient(player,
+		productInfo.Name .. " purchased!", Color3.fromRGB(255, 220, 90))
 	return true
+end
+
+for _, productInfo in pairs(GameConfig.DeveloperProducts) do
+	productHandlers[productInfo.Id] = function(player)
+		return grantProduct(player, productInfo)
+	end
 end
 
 --------------------------------------------------------------------------------

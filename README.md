@@ -17,19 +17,37 @@ src/
 │   ├── DataManager.lua          (Module)    Session-locked DataStore profiles,
 │   │                                        300s auto-save, dupe protection
 │   ├── CoreEngine.server.lua    (Script)    Node/combat loop, damage formula,
-│   │                                        boss loot, zones, rebirth
+│   │                                        boss loot, zones, rebirth, Premium
+│   │                                        coin bonus, hit-VFX events
 │   ├── PetSystem.lua            (Module)    5-tier weighted hatching + VIP Luck
 │   │                                        gamepass (ID 1234567) rare odds ×1.5
-│   └── MonetizationManager.server.lua       ProcessReceipt (100/500 Coins, Mega
-│                                            Egg Roll) + gamepass grants
+│   ├── MonetizationManager.server.lua       ProcessReceipt for all 8 products
+│   │                                        (coins, gems, Starter Pack, Mega
+│   │                                        Egg Roll) + gamepass grants
+│   ├── DailyRewardManager.server.lua        7-day streak rewards (20h cadence,
+│   │                                        48h streak break, rebirth-scaled)
+│   └── LeaderboardManager.server.lua        Global OrderedDataStore top-10
+│                                            (Richest / Most Rebirths)
 ├── StarterPlayerScripts/
 │   ├── LootAnimator.client.lua              3D loot burst → Bezier vacuum into
 │   │                                        the HumanoidRootPart
-│   └── CombatController.client.lua          Click/hold-to-swing input + world
-│                                            health bars
+│   ├── CombatController.client.lua          Click/hold-to-swing input + world
+│   │                                        health bars
+│   ├── PetFollower.client.lua               Equipped pets orbit/bob behind every
+│   │                                        player (attribute-driven, local-only)
+│   ├── VFXController.client.lua             Damage numbers, hit sparks, kill
+│   │                                        bursts, camera pulse
+│   └── ZoneLightingController.client.lua    Per-biome lighting tweens + zone
+│                                            music crossfade (ZoneRegion parts)
 └── StarterGui/MainHUD/
-    └── ShopController.client.lua            Self-building shop UI, instant
-                                             MarketplaceService prompts
+    ├── ShopController.client.lua            Self-building shop UI, instant
+    │                                        MarketplaceService prompts, upsells
+    ├── HatchAnimator.client.lua             Full-screen egg wobble/crack/reveal
+    │                                        cutscene (queued, click-to-skip)
+    ├── PetInventoryController.client.lua    Pet list, equip/unequip, EQUIP BEST
+    ├── DailyRewardController.client.lua     Streak calendar + glowing claim hook
+    ├── LeaderboardController.client.lua     Global top-10 window
+    └── ZoneTravelController.client.lua      World map: unlock zones + teleport
 docs/
 └── MapSpecifications.md                     4-biome lighting sheets, 60 mesh
                                              manifest, boss scaling & loot tables

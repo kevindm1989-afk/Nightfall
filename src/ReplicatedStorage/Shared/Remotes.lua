@@ -19,6 +19,7 @@ local REMOTE_EVENTS = {
 	"PetHatched",     -- server -> client : (petInfo)       hatch reveal animation
 	"NotifyText",     -- server -> client : (message, color) toast messages
 	"ToggleAutoHatch",-- client -> server : (enabled)       auto-hatch preference
+	"TargetDamaged",  -- server -> client : (hitPayload)    damage numbers / hit VFX
 }
 
 local REMOTE_FUNCTIONS = {
@@ -29,6 +30,8 @@ local REMOTE_FUNCTIONS = {
 	"UnlockZone",     -- client -> server : (zoneId)     -> success, errorMessage
 	"Rebirth",        -- client -> server : ()           -> success, errorMessage
 	"GetData",        -- client -> server : ()           -> full sanitized snapshot
+	"ClaimDaily",     -- client -> server : ()           -> success, payload|errorMessage
+	"GetLeaderboard", -- client -> server : ()           -> { [boardKey] = { {Name, Value}, ... } }
 }
 
 local FOLDER_NAME = "Remotes"

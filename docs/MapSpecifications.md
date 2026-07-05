@@ -13,10 +13,13 @@ CoreEngine discovers all interactive content by this exact hierarchy:
 Workspace
 └── Zones
     ├── Zone1
-    │   ├── Nodes    (Models, attribute NodeType  = "OakNode" | "MossyRock" | "ElderTrunk")
-    │   ├── Enemies  (Models, attribute EnemyType = "ThornSprite" | "BarkGolem")
-    │   ├── Boss     (Model,  attribute BossName  = "VerdantColossus")
-    │   └── Scenery  (decorative meshes, ignored by the engine)
+    │   ├── Nodes      (Models, attribute NodeType  = "OakNode" | "MossyRock" | "ElderTrunk")
+    │   ├── Enemies    (Models, attribute EnemyType = "ThornSprite" | "BarkGolem")
+    │   ├── Boss       (Model,  attribute BossName  = "VerdantColossus")
+    │   ├── ZoneRegion (invisible anchored Part spanning the whole zone —
+    │   │               drives runtime lighting + music via ZoneLightingController)
+    │   ├── ZoneSpawn  (anchored Part — teleport target for the World Map UI)
+    │   └── Scenery    (decorative meshes, ignored by the engine)
     ├── Zone2 … Zone4 (same structure)
 ```
 
@@ -24,9 +27,15 @@ Every Node/Enemy/Boss model **must have a PrimaryPart** (the engine measures
 hit distance to it and anchors health bars on it). The engine stamps
 `MaxHealth` / `CurrentHealth` attributes at runtime — do not set them by hand.
 
-Zone lighting is applied per-zone using a `Lighting` settings swap when the
-player crosses a `ZoneGate` part (or set globally if you ship zones as
-separate places). Values below are the authoritative targets.
+Zone lighting and music are applied at runtime by
+`ZoneLightingController.client.lua`, which point-tests the player against each
+zone's `ZoneRegion` part and tweens `Lighting` to the sheets below (mirrored in
+`GameConfig.ZoneAmbience`) over 1.5 seconds, crossfading the zone music track.
+Set `ZoneRegion.Transparency = 1`, `CanCollide = false`, `Anchored = true`.
+
+Optional art hookups (both fall back to glowing primitives until filled):
+- `ReplicatedStorage/LootMeshes/<lootId>` — 3D loot pickups for LootAnimator
+- `ReplicatedStorage/PetMeshes/<MDL_Pet_*>` — follower models for PetFollower
 
 ---
 

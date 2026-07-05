@@ -36,23 +36,68 @@ GameConfig.Gamepasses = {
 }
 
 GameConfig.DeveloperProducts = {
+	StarterPack = {
+		Id = 1111118,
+		Name = "Starter Pack",
+		Description = "ONE-TIME OFFER: 2,500 Coins + 25 Gems + a free Mega Egg Roll!",
+		Grant = { Gold = 2500, Gems = 25, EggRoll = "MegaEgg" },
+		OneTime = true,
+		Order = 1,
+	},
 	Coins100 = {
 		Id = 1111111,
 		Name = "100 Coins",
+		Description = "Instantly grants 100 Coins.",
 		Grant = { Gold = 100 },
+		Order = 2,
 	},
 	Coins500 = {
 		Id = 1111112,
 		Name = "500 Coins",
+		Description = "Instantly grants 500 Coins.",
 		Grant = { Gold = 500 },
+		Order = 3,
+	},
+	Coins5000 = {
+		Id = 1111114,
+		Name = "5,000 Coins",
+		Description = "Instantly grants 5,000 Coins. Best value for zone unlocks!",
+		Grant = { Gold = 5000 },
+		Order = 4,
+	},
+	Coins50000 = {
+		Id = 1111115,
+		Name = "50,000 Coins",
+		Description = "Instantly grants 50,000 Coins. Skip straight to Magma Core!",
+		Grant = { Gold = 50000 },
+		Order = 5,
+	},
+	Gems100 = {
+		Id = 1111116,
+		Name = "100 Gems",
+		Description = "Instantly grants 100 Gems for Royal Egg hatches.",
+		Grant = { Gems = 100 },
+		Order = 6,
+	},
+	Gems1000 = {
+		Id = 1111117,
+		Name = "1,000 Gems",
+		Description = "Instantly grants 1,000 Gems. The whale-sized gem vault!",
+		Grant = { Gems = 1000 },
+		Order = 7,
 	},
 	MegaEggRoll = {
 		Id = 1111113,
 		Name = "Mega Egg Roll",
+		Description = "One premium roll on the Mega Egg — Rare or better guaranteed pool!",
 		-- Grants one hatch from the premium "MegaEgg" table (see Eggs below).
 		Grant = { EggRoll = "MegaEgg" },
+		Order = 8,
 	},
 }
+
+-- Roblox Premium members earn bonus coins (advertised on the shop page).
+GameConfig.PremiumCoinBonus = 1.25
 
 --------------------------------------------------------------------------------
 -- WEAPONS
@@ -130,6 +175,15 @@ GameConfig.Eggs = {
 	CyberEgg = {
 		Cost = 5200000, Currency = "Gold", Zone = 4,
 		Pool = { "GlimmerBat", "CinderCat", "ShardWolf", "NovaDrake", "VoidSeraph", "ChronoLion" },
+	},
+	-- The Gem sink: always available, boosted odds. Gems come from bosses,
+	-- daily streaks and the Gems developer products.
+	RoyalEgg = {
+		Cost = 50, Currency = "Gems", Zone = 1,
+		Pool = { "MossFox", "GlimmerBat", "ShardWolf", "SkyKoi", "PrismGolem", "NovaDrake", "VoidSeraph", "ChronoLion" },
+		WeightOverride = {
+			Common = 0, Uncommon = 40, Rare = 42, Epic = 15, Mythic = 3,
+		},
 	},
 	-- Premium egg ONLY obtainable through the MegaEggRoll developer product.
 	MegaEgg = {
@@ -309,5 +363,81 @@ GameConfig.Rebirth = {
 }
 
 GameConfig.AutoSaveIntervalSeconds = 300
+
+--------------------------------------------------------------------------------
+-- ZONE AMBIENCE (runtime version of docs/MapSpecifications.md)
+-- Applied by ZoneLightingController when the player crosses into a zone's
+-- ZoneRegion part. MusicIds are placeholders — swap in licensed tracks.
+--------------------------------------------------------------------------------
+GameConfig.ZoneAmbience = {
+	[1] = {
+		Ambient = Color3.fromRGB(70, 90, 75),
+		OutdoorAmbient = Color3.fromRGB(110, 130, 110),
+		FogColor = Color3.fromRGB(200, 220, 200),
+		FogStart = 40, FogEnd = 450,
+		Brightness = 2.2,
+		ColorShift_Top = Color3.fromRGB(120, 160, 120),
+		ClockTime = 14.5,
+		MusicId = "rbxassetid://1848354536", -- REPLACE: calm forest track
+	},
+	[2] = {
+		Ambient = Color3.fromRGB(120, 45, 30),
+		OutdoorAmbient = Color3.fromRGB(90, 30, 20),
+		FogColor = Color3.fromRGB(80, 20, 20),
+		FogStart = 25, FogEnd = 300,
+		Brightness = 1.4,
+		ColorShift_Top = Color3.fromRGB(255, 90, 40),
+		ClockTime = 0,
+		MusicId = "rbxassetid://1837879082", -- REPLACE: percussive volcanic track
+	},
+	[3] = {
+		Ambient = Color3.fromRGB(150, 150, 190),
+		OutdoorAmbient = Color3.fromRGB(180, 180, 220),
+		FogColor = Color3.fromRGB(230, 230, 250),
+		FogStart = 60, FogEnd = 700,
+		Brightness = 2.8,
+		ColorShift_Top = Color3.fromRGB(200, 190, 255),
+		ClockTime = 10.2,
+		MusicId = "rbxassetid://1848183670", -- REPLACE: airy crystalline track
+	},
+	[4] = {
+		Ambient = Color3.fromRGB(20, 12, 40),
+		OutdoorAmbient = Color3.fromRGB(15, 10, 30),
+		FogColor = Color3.fromRGB(10, 5, 20),
+		FogStart = 20, FogEnd = 260,
+		Brightness = 0.9,
+		ColorShift_Top = Color3.fromRGB(90, 40, 255),
+		ClockTime = 0,
+		MusicId = "rbxassetid://1837324424", -- REPLACE: synthwave endgame track
+	},
+}
+
+--------------------------------------------------------------------------------
+-- DAILY REWARDS (7-day streak, resets after 48h of absence)
+-- Gold amounts scale x(1 + Rebirths) so the streak stays relevant forever.
+--------------------------------------------------------------------------------
+GameConfig.DailyRewards = {
+	[1] = { Gold = 500 },
+	[2] = { Gold = 1200 },
+	[3] = { Gems = 5 },
+	[4] = { Gold = 4000 },
+	[5] = { Gems = 15 },
+	[6] = { Gold = 15000 },
+	[7] = { Gems = 25, EggRoll = "RoyalEgg" }, -- streak capstone: free Royal hatch
+}
+GameConfig.DailyRewardCooldown = 20 * 60 * 60      -- claimable every 20h
+GameConfig.DailyRewardStreakBreak = 48 * 60 * 60   -- streak resets after 48h
+
+--------------------------------------------------------------------------------
+-- LEADERBOARDS
+--------------------------------------------------------------------------------
+GameConfig.Leaderboards = {
+	RefreshSeconds = 120,
+	TopN = 10,
+	Boards = {
+		{ Key = "TotalGold", Store = "Leaderboard_TotalGold_V1", Title = "Richest Players", Stat = "TotalGoldEarned" },
+		{ Key = "Rebirths",  Store = "Leaderboard_Rebirths_V1",  Title = "Most Rebirths",   Stat = "Rebirths" },
+	},
+}
 
 return GameConfig

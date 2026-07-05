@@ -72,6 +72,11 @@ local DEFAULT_DATA = {
 	PendingEggRolls = 0,    -- Mega Egg Rolls bought but not yet consumed
 	AutoHatchEnabled = false,
 	LastEggHatched = "ForestEgg",
+	StarterPackPurchased = false,
+
+	-- Daily reward streak
+	LastDailyClaim = 0,
+	DailyStreak = 0,
 
 	-- Bookkeeping
 	TotalGoldEarned = 0,
@@ -266,7 +271,27 @@ local function snapshotFor(data: any): any
 		AutoHatchEnabled = data.AutoHatchEnabled,
 		PendingEggRolls = data.PendingEggRolls,
 		TotalHatches = data.TotalHatches,
+		StarterPackPurchased = data.StarterPackPurchased,
+		LastDailyClaim = data.LastDailyClaim,
+		DailyStreak = data.DailyStreak,
 	}
+end
+
+-- Publishes the equipped pet names as a replicated Player attribute so EVERY
+-- client (not just the owner) can render pet followers locally.
+local function publishEquippedPets(player: Player, data: any)
+	local byUUID: { [string]: any } = {}
+	for _, pet in ipairs(data.OwnedPets) do
+		byUUID[pet.UUID] = pet
+	end
+	local names = {}
+	for _, uuid in ipairs(data.EquippedPets) do
+		local pet = byUUID[uuid]
+		if pet then
+			table.insert(names, pet.PetName)
+		end
+	end
+	player:SetAttribute("EquippedPetNames", table.concat(names, ","))
 end
 
 function DataManager.PushToClient(player: Player)
@@ -278,6 +303,7 @@ function DataManager.PushToClient(player: Player)
 			(leaderstats :: any).Gems.Value = session.Data.Gems;
 			(leaderstats :: any).Rebirths.Value = session.Data.Rebirths;
 		end
+		publishEquippedPets(player, session.Data)
 		Remotes.DataChanged:FireClient(player, snapshotFor(session.Data))
 	end
 end

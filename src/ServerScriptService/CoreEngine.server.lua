@@ -145,7 +145,12 @@ local function coinMultiplierFor(player: Player): number
 	if not data then
 		return 1
 	end
-	return math.max(1, data.CoinMultiplier)
+	local multiplier = math.max(1, data.CoinMultiplier)
+	-- Roblox Premium members earn bonus coins (advertised in the shop).
+	if player.MembershipType == Enum.MembershipType.Premium then
+		multiplier *= GameConfig.PremiumCoinBonus
+	end
+	return multiplier
 end
 
 --------------------------------------------------------------------------------
@@ -334,6 +339,14 @@ local function handleSwing(player: Player, model: any, expectedKinds: { [string]
 	state.Health = math.max(0, state.Health - damage)
 	state.LastAttackers[player] = (state.LastAttackers[player] or 0) + damage
 	stampHealth(model, state.Health, state.MaxHealth)
+
+	-- Hit feedback for the attacker's VFXController (damage number + sparks).
+	Remotes.TargetDamaged:FireClient(player, {
+		Position = primary.Position,
+		Damage = damage,
+		Kind = state.Kind,
+		Died = state.Health <= 0,
+	})
 
 	if state.Health <= 0 then
 		killTarget(model, state, player)

@@ -253,23 +253,49 @@ do
 	local page = pages.Robux
 	local order = 0
 
-	-- Developer Products
-	local productList = {
-		GameConfig.DeveloperProducts.Coins100,
-		GameConfig.DeveloperProducts.Coins500,
-		GameConfig.DeveloperProducts.MegaEggRoll,
-	}
+	-- Developer Products: fully config-driven, sorted by their Order field, so
+	-- new packs added to GameConfig appear here with zero UI changes.
+	local productList = {}
+	for _, product in pairs(GameConfig.DeveloperProducts) do
+		table.insert(productList, product)
+	end
+	table.sort(productList, function(a, b)
+		return (a.Order or 99) < (b.Order or 99)
+	end)
+
 	for _, product in ipairs(productList) do
 		order += 1
-		local _, buy = makeCard(page, order, product.Name,
-			product.Grant.Gold and ("Instantly grants " .. product.Grant.Gold .. " Gold.")
-				or "One premium roll on the Mega Egg — Rare or better guaranteed pool!")
+		local card, buy = makeCard(page, order, product.Name, product.Description or "")
 		buy.Text = "R$ BUY"
 		buy.MouseButton1Click:Connect(function()
 			-- Instant prompt; grant happens server-side in ProcessReceipt.
 			MarketplaceService:PromptProductPurchase(localPlayer, product.Id)
 		end)
+
+		-- The Starter Pack is a one-time offer: hide it once owned.
+		if product.OneTime then
+			local function refreshVisibility()
+				card.Visible = not (latestData and latestData.StarterPackPurchased)
+			end
+			Remotes.DataChanged.OnClientEvent:Connect(refreshVisibility)
+			task.defer(refreshVisibility)
+		end
 	end
+
+	-- Premium upsell banner (Roblox pays engagement payouts; the coin bonus
+	-- gives Premium members a reason to pick this game).
+	order += 1
+	local premiumCard = Instance.new("Frame")
+	premiumCard.Size = UDim2.new(1, -8, 0, 46)
+	premiumCard.BackgroundColor3 = Color3.fromRGB(70, 60, 100)
+	premiumCard.LayoutOrder = order
+	premiumCard.Parent = page
+	round(premiumCard, 10)
+	local premiumLabel = label(premiumCard,
+		("Roblox Premium members earn %d%% bonus Coins — always on!")
+			:format(math.floor((GameConfig.PremiumCoinBonus - 1) * 100)),
+		UDim2.new(1, -16, 1, 0), UDim2.new(0, 8, 0, 0), 16)
+	premiumLabel.TextColor3 = Color3.fromRGB(220, 210, 255)
 
 	-- Gamepasses
 	local passList = {
@@ -314,13 +340,16 @@ end
 do
 	local page = pages.Eggs
 	local order = 0
-	local eggOrder = { "ForestEgg", "MagmaEgg", "CrystalEgg", "CyberEgg" }
+	local eggOrder = { "ForestEgg", "MagmaEgg", "CrystalEgg", "CyberEgg", "RoyalEgg" }
 	for _, eggName in ipairs(eggOrder) do
 		local egg = GameConfig.Eggs[eggName]
 		order += 1
 		local zoneName = GameConfig.Zones[egg.Zone] and GameConfig.Zones[egg.Zone].Name or "?"
-		local _, buy = makeCard(page, order, eggName,
-			("Zone: %s  •  Cost: %s %s"):format(zoneName, abbreviate(egg.Cost), egg.Currency))
+		local subtitle = ("Zone: %s  •  Cost: %s %s"):format(zoneName, abbreviate(egg.Cost), egg.Currency)
+		if eggName == "RoyalEgg" then
+			subtitle = ("GEM EXCLUSIVE  •  Cost: %s Gems  •  Uncommon or better!"):format(abbreviate(egg.Cost))
+		end
+		local _, buy = makeCard(page, order, eggName, subtitle)
 		buy.Text = "HATCH"
 		buy.MouseButton1Click:Connect(function()
 			buy.Active = false
@@ -328,9 +357,35 @@ do
 			local reveal, err = Remotes.HatchEgg:InvokeServer(eggName)
 			if not reveal and err then
 				showToast(err, Color3.fromRGB(255, 90, 90))
+				-- Upsell: a failed hatch for lack of currency is the highest-
+				-- intent purchase moment in the game — land them on the Robux tab.
+				if string.find(err, "Not enough") then
+					shopFrame.Visible = true
+					selectTab("Robux")
+				end
 			end
 		end)
 	end
+
+	-- VIP Luck advert: show boosted odds right where hatch decisions happen.
+	order += 1
+	local luckCard = Instance.new("Frame")
+	luckCard.Size = UDim2.new(1, -8, 0, 46)
+	luckCard.BackgroundColor3 = Color3.fromRGB(80, 50, 110)
+	luckCard.LayoutOrder = order
+	luckCard.Parent = page
+	round(luckCard, 10)
+	local luckButton = Instance.new("TextButton")
+	luckButton.Size = UDim2.fromScale(1, 1)
+	luckButton.BackgroundTransparency = 1
+	luckButton.Font = FONT
+	luckButton.Text = "VIP LUCK: Rare 15%→22.5% • Epic 4.5%→6.75% • Mythic 0.5%→0.75%  [TAP]"
+	luckButton.TextColor3 = Color3.fromRGB(230, 200, 255)
+	luckButton.TextScaled = true
+	luckButton.Parent = luckCard
+	luckButton.MouseButton1Click:Connect(function()
+		MarketplaceService:PromptGamePassPurchase(localPlayer, GameConfig.Gamepasses.VIPLuck.Id)
+	end)
 end
 
 --------------------------------------------------------------------------------
@@ -426,13 +481,6 @@ task.spawn(function()
 	end
 end)
 
--- Hatch reveal toast (LootAnimator handles the 3D side).
-Remotes.PetHatched.OnClientEvent:Connect(function(reveal: any)
-	if type(reveal) == "table" then
-		showToast(("Hatched %s (%s, +%d dmg)!"):format(
-			tostring(reveal.PetName), tostring(reveal.Tier), tonumber(reveal.StatBonus) or 0),
-			Color3.fromRGB(255, 170, 0))
-	end
-end)
+-- (Hatch reveals are handled by HatchAnimator's full-screen cutscene.)
 
 print("[ShopController] Ready.")
