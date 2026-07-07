@@ -4,6 +4,14 @@ A complete, production-ready Roblox simulator: break resource nodes, fight
 enemies and zone bosses, hatch pets from weighted eggs, rebirth for permanent
 multipliers, and monetize through Developer Products and Gamepasses.
 
+**Hatch. Fuse. Cross the Rift.** — four worlds, one tear in reality.
+
+### Where to start
+- `docs/BrandKit.md` — identity, key-art direction, store copy, pricing model
+- `docs/LaunchPlaybook.md` — the ordered checklist from code → published game
+- `docs/MapSpecifications.md` — 4-biome build spec (lighting, meshes, bosses)
+- `marketing/brand-kit.html` — the interactive brand kit (open in a browser)
+
 ## Project Layout (Rojo)
 
 ```

@@ -1,0 +1,653 @@
+<title>Rift Tamer — Launch Brand Kit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    color-scheme: dark;
+    --void:#0B0714; --void-2:#0F0A1C; --surface:#160E2A; --surface-2:#1D1436;
+    --line:#2A2044; --line-soft:#221A3A;
+    --forest:#4FD98A; --magma:#FF5A38; --crystal:#8FB6FF; --cyber:#C763FF;
+    --gold:#FFC23D; --gold-deep:#E39A18;
+    --ink:#EDE7FA; --mut:#A093C2; --mut-2:#7C6FA0;
+    --font-display:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --font-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Consolas,monospace;
+    --maxw:1120px;
+    --spectrum:linear-gradient(90deg,var(--forest),var(--crystal) 34%,var(--gold) 55%,var(--magma) 74%,var(--cyber));
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--void); color:var(--ink);
+    font-family:var(--font-body); line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  #rift{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;}
+  .wrap{position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  section{position:relative; z-index:1;}
+
+  /* ---------- type ---------- */
+  .eyebrow{
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.34em;
+    text-transform:uppercase; color:var(--mut); margin:0;
+  }
+  h2.sec{
+    font-family:var(--font-display); font-weight:800; letter-spacing:-.02em;
+    font-size:clamp(1.7rem,4.2vw,2.7rem); margin:.4rem 0 0; text-wrap:balance; line-height:1.05;
+  }
+  .sec-lead{color:var(--mut); max-width:60ch; margin:.9rem 0 0; font-size:1.02rem;}
+  .mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:clamp(84px,15vh,150px) 0 40px; text-align:center;}
+  .badge{
+    display:inline-flex; align-items:center; gap:.55rem;
+    font-family:var(--font-mono); font-size:.7rem; letter-spacing:.24em; text-transform:uppercase;
+    color:var(--mut); border:1px solid var(--line); border-radius:100px;
+    padding:.5rem 1rem; background:rgba(255,255,255,.02);
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);}
+  .wordmark{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(3.4rem,13vw,8.6rem); line-height:.86; letter-spacing:-.045em;
+    margin:26px 0 0; text-transform:uppercase;
+    background:var(--spectrum); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 4px 40px rgba(199,99,255,.28));
+  }
+  .wordmark .l2{display:block;}
+  .tagline{
+    font-family:var(--font-display); font-weight:700; letter-spacing:.02em;
+    font-size:clamp(1rem,3.2vw,1.5rem); margin:18px 0 0; color:var(--ink);
+  }
+  .tagline b{color:var(--gold);}
+  .subhead{color:var(--mut); max-width:52ch; margin:16px auto 0; font-size:1.05rem;}
+
+  .ticker{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+    max-width:760px; margin:48px auto 0;
+  }
+  .stat{
+    background:linear-gradient(180deg,var(--surface),var(--void-2));
+    border:1px solid var(--line); border-radius:16px; padding:20px 12px;
+  }
+  .stat .n{font-family:var(--font-display); font-weight:800; font-size:clamp(1.5rem,4vw,2.1rem); letter-spacing:-.02em;}
+  .stat .k{font-family:var(--font-mono); font-size:.66rem; letter-spacing:.18em; text-transform:uppercase; color:var(--mut); margin-top:4px;}
+
+  /* ---------- generic section frame ---------- */
+  .band{padding:72px 0;}
+  .band-head{margin-bottom:40px;}
+
+  /* ---------- pitch ---------- */
+  .pitch{
+    border:1px solid var(--line); border-radius:22px; overflow:hidden;
+    background:radial-gradient(120% 140% at 0% 0%,rgba(199,99,255,.10),transparent 55%),var(--void-2);
+  }
+  .pitch-inner{padding:clamp(28px,5vw,52px);}
+  .pitch p{font-size:clamp(1.15rem,2.4vw,1.5rem); line-height:1.5; margin:0; text-wrap:pretty;}
+  .pitch p .hl{color:var(--gold); font-weight:600;}
+  .pitch p .rift-word{
+    background:var(--spectrum); -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:700;
+  }
+
+  /* ---------- biomes ---------- */
+  .biomes{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+  .biome{
+    position:relative; border:1px solid var(--line); border-radius:20px; overflow:hidden;
+    background:var(--surface); padding:26px; min-height:220px;
+    display:flex; flex-direction:column; transition:transform .25s ease, border-color .25s ease;
+  }
+  .biome:hover{transform:translateY(-4px);}
+  .biome::before{
+    content:""; position:absolute; inset:0 0 auto 0; height:4px; background:var(--c);
+    box-shadow:0 0 24px var(--c);
+  }
+  .biome::after{
+    content:""; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%;
+    background:radial-gradient(circle,var(--c),transparent 68%); opacity:.16; pointer-events:none;
+  }
+  .biome-idx{font-family:var(--font-mono); font-size:.7rem; letter-spacing:.2em; color:var(--mut); text-transform:uppercase;}
+  .biome h3{font-family:var(--font-display); font-weight:800; font-size:1.55rem; margin:6px 0 0; letter-spacing:-.01em; color:var(--c2);}
+  .biome .vibe{color:var(--mut); font-size:.95rem; margin:8px 0 18px;}
+  .biome .rows{margin-top:auto; display:flex; flex-direction:column; gap:8px;}
+  .biome .row{display:flex; justify-content:space-between; align-items:baseline; gap:12px; border-top:1px solid var(--line-soft); padding-top:8px;}
+  .biome .row .lab{font-family:var(--font-mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--mut-2);}
+  .biome .row .val{font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:.9rem; color:var(--ink); text-align:right;}
+  .biome .boss{color:var(--c2); font-weight:600;}
+
+  /* ---------- loop ---------- */
+  .loop{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .loop-step{
+    position:relative; border:1px solid var(--line); border-radius:18px; padding:22px 18px;
+    background:linear-gradient(180deg,var(--surface),var(--void-2));
+  }
+  .loop-step .step-n{font-family:var(--font-mono); font-size:.7rem; letter-spacing:.2em; color:var(--gold); text-transform:uppercase;}
+  .loop-step h4{font-family:var(--font-display); font-weight:800; font-size:1.2rem; margin:8px 0 6px;}
+  .loop-step p{margin:0; color:var(--mut); font-size:.9rem;}
+  .loop-step .arrow{
+    position:absolute; right:-11px; top:50%; transform:translateY(-50%); z-index:2;
+    width:22px;height:22px;border-radius:50%; background:var(--void); border:1px solid var(--line);
+    display:grid; place-items:center; color:var(--gold); font-size:.8rem;
+  }
+
+  /* ---------- key art ---------- */
+  .art-grid{display:grid; grid-template-columns:320px 1fr; gap:26px; align-items:start;}
+  .icon-card{border:1px solid var(--line); border-radius:22px; overflow:hidden; background:var(--void-2);}
+  .icon-card canvas{display:block; width:100%; height:auto; aspect-ratio:1/1;}
+  .icon-card .cap{padding:12px 16px; font-family:var(--font-mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--mut); border-top:1px solid var(--line);}
+  .thumbs{display:flex; flex-direction:column; gap:18px;}
+  .thumb{
+    position:relative; border:1px solid var(--line); border-radius:18px; overflow:hidden;
+    aspect-ratio:16/9; display:flex; flex-direction:column; justify-content:space-between; padding:22px;
+  }
+  .thumb.t1{background:radial-gradient(130% 130% at 100% 0%,rgba(255,90,56,.42),transparent 52%),radial-gradient(120% 120% at 0% 100%,rgba(79,217,138,.34),transparent 50%),var(--void);}
+  .thumb.t2{background:radial-gradient(130% 130% at 0% 0%,rgba(199,99,255,.44),transparent 55%),radial-gradient(120% 120% at 100% 100%,rgba(143,182,255,.3),transparent 52%),var(--void);}
+  .thumb .flag{
+    align-self:flex-start; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.2em; text-transform:uppercase;
+    background:var(--gold); color:#2A1A00; font-weight:700; padding:.35rem .7rem; border-radius:6px;
+  }
+  .thumb .big{
+    font-family:var(--font-display); font-weight:800; letter-spacing:-.02em; line-height:.95;
+    font-size:clamp(1.6rem,4.6vw,2.8rem); text-transform:uppercase; text-shadow:0 3px 20px rgba(0,0,0,.55);
+  }
+  .thumb .big span{color:var(--gold);}
+  .thumb .sub{font-family:var(--font-mono); font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink); opacity:.9;}
+  .thumb .note{position:absolute; right:14px; bottom:12px; font-family:var(--font-mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.4);}
+  .spec{border:1px solid var(--line); border-radius:16px; background:var(--void-2); padding:18px 20px; margin-top:18px;}
+  .spec h4{font-family:var(--font-display); font-weight:800; font-size:1rem; margin:0 0 10px;}
+  .spec ul{margin:0; padding-left:18px; color:var(--mut); font-size:.92rem;}
+  .spec li{margin:5px 0;}
+  .spec li b{color:var(--ink); font-weight:600;}
+
+  /* ---------- pricing ---------- */
+  .price-cols{display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:8px;}
+  .price-group h3{font-family:var(--font-display); font-weight:800; font-size:1.2rem; margin:0 0 4px;}
+  .price-group .gsub{font-family:var(--font-mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--mut); margin:0 0 16px;}
+  .item{
+    display:grid; grid-template-columns:1fr auto; gap:6px 14px; align-items:center;
+    border:1px solid var(--line); border-radius:14px; background:var(--surface); padding:14px 16px; margin-bottom:10px;
+  }
+  .item .nm{font-weight:600; font-size:.98rem;}
+  .item .robux{
+    grid-row:span 2; font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-weight:700; font-size:1.05rem;
+    color:var(--gold); white-space:nowrap; display:flex; align-items:center; gap:5px;
+  }
+  .item .robux::before{content:""; width:13px; height:13px; border-radius:50%; border:2px solid var(--gold); display:inline-block;}
+  .item .why{grid-column:1; font-size:.82rem; color:var(--mut); line-height:1.4;}
+  .fair{
+    margin-top:22px; border:1px solid var(--line); border-left:3px solid var(--forest); border-radius:12px;
+    background:rgba(79,217,138,.05); padding:16px 20px; color:var(--mut); font-size:.92rem;
+  }
+  .fair b{color:var(--forest);}
+
+  /* ---------- store copy ---------- */
+  .copybox{border:1px solid var(--line); border-radius:18px; overflow:hidden; background:var(--void-2);}
+  .copybox .bar{display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--line); background:var(--surface);}
+  .copybox .bar .t{font-family:var(--font-mono); font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--mut);}
+  .copybtn{
+    font-family:var(--font-mono); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+    background:var(--gold); color:#2A1A00; border:0; border-radius:7px; padding:.45rem .85rem; font-weight:700;
+  }
+  .copybtn:hover{background:#ffd066;}
+  .copybtn:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .copybox pre{margin:0; padding:20px; font-family:var(--font-mono); font-size:.82rem; line-height:1.65; color:var(--ink); white-space:pre-wrap; overflow-x:auto;}
+  .tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;}
+  .tag{font-family:var(--font-mono); font-size:.72rem; color:var(--mut); border:1px solid var(--line); border-radius:100px; padding:.35rem .8rem;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line); margin-top:80px; padding:44px 0 70px;}
+  .foot-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:30px; align-items:start;}
+  .foot-status{display:flex; flex-direction:column; gap:9px;}
+  .fs-row{display:flex; align-items:center; gap:10px; font-size:.92rem; color:var(--mut);}
+  .fs-row .tick{width:18px; height:18px; border-radius:50%; display:grid; place-items:center; font-size:.7rem; flex:none;}
+  .fs-row.done .tick{background:rgba(79,217,138,.18); color:var(--forest);}
+  .fs-row.todo .tick{background:rgba(255,194,61,.16); color:var(--gold);}
+  .fs-row b{color:var(--ink); font-weight:600;}
+  .foot-mark{font-family:var(--font-display); font-weight:800; font-size:1.4rem; background:var(--spectrum); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-.02em;}
+  .foot-note{color:var(--mut-2); font-size:.82rem; margin-top:10px; font-family:var(--font-mono);}
+
+  @media (max-width:860px){
+    .ticker{grid-template-columns:repeat(2,1fr);}
+    .biomes{grid-template-columns:1fr;}
+    .loop{grid-template-columns:1fr 1fr;}
+    .loop-step .arrow{display:none;}
+    .art-grid{grid-template-columns:1fr;}
+    .icon-card{max-width:320px;}
+    .price-cols{grid-template-columns:1fr;}
+    .foot-grid{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} }
+</style>
+
+<canvas id="rift" aria-hidden="true"></canvas>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge"><span class="dot"></span>Roblox · Pet &amp; Loot Simulator</span>
+    <h1 class="wordmark">Rift Tamer<span class="l2">&nbsp;</span></h1>
+    <p class="tagline">Hatch. Fuse. <b>Cross the Rift.</b></p>
+    <p class="subhead">Four worlds, one tear in reality. Break, battle, and hatch your way from a haunted forest to a neon abyss — collecting pets that follow you across every rift.</p>
+    <div class="ticker">
+      <div class="stat"><div class="n" style="color:var(--forest)">4</div><div class="k">Rift Biomes</div></div>
+      <div class="stat"><div class="n" style="color:var(--crystal)">13</div><div class="k">Collectible Pets</div></div>
+      <div class="stat"><div class="n" style="color:var(--cyber)">3</div><div class="k">Pet Variants</div></div>
+      <div class="stat"><div class="n" style="color:var(--gold)">9</div><div class="k">Weapon Tiers</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="band">
+  <div class="wrap">
+    <div class="pitch"><div class="pitch-inner">
+      <p>Most pet sims trap you in one world. <span class="rift-word">Rift Tamer</span> tears open <span class="hl">four</span> — a bioluminescent forest, a molten core, a floating crystal skyway, and a glitching cyber-abyss. Each rift raises the stakes, the loot, and the boss. Your pets? They come with you.</p>
+    </div></div>
+  </div>
+</section>
+
+<section class="band" id="rifts">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="eyebrow">The Worlds</p>
+      <h2 class="sec">Four Rifts, One Descent</h2>
+      <p class="sec-lead">Every rift is a full biome with its own lighting, music, resource nodes, enemies, and a signature boss. Unlock them in order — or grind coins to punch through the walls faster.</p>
+    </div>
+    <div class="biomes">
+      <article class="biome" style="--c:var(--forest);--c2:var(--forest)">
+        <span class="biome-idx">Rift 01 · Entry</span>
+        <h3>Mystic Forest</h3>
+        <p class="vibe">Bioluminescent woodland, drifting spores, moss-swallowed ruins. Calm — until it isn't.</p>
+        <div class="rows">
+          <div class="row"><span class="lab">Boss</span><span class="val boss">Verdant Colossus</span></div>
+          <div class="row"><span class="lab">Boss HP</span><span class="val">2,500</span></div>
+          <div class="row"><span class="lab">Unlock</span><span class="val">Free · Start Here</span></div>
+        </div>
+      </article>
+      <article class="biome" style="--c:var(--magma);--c2:var(--magma)">
+        <span class="biome-idx">Rift 02 · Molten</span>
+        <h3>Magma Core</h3>
+        <p class="vibe">Volcanic cavern network — lava falls, basalt columns, embers on the heat shimmer.</p>
+        <div class="rows">
+          <div class="row"><span class="lab">Boss</span><span class="val boss">Infernal Titan</span></div>
+          <div class="row"><span class="lab">Boss HP</span><span class="val">15,000</span></div>
+          <div class="row"><span class="lab">Unlock</span><span class="val">25,000 Gold</span></div>
+        </div>
+      </article>
+      <article class="biome" style="--c:var(--crystal);--c2:var(--crystal)">
+        <span class="biome-idx">Rift 03 · Ascendant</span>
+        <h3>Crystal Skyway</h3>
+        <p class="vibe">Floating prismatic islands linked by light-bridges. Low gravity, high refraction.</p>
+        <div class="rows">
+          <div class="row"><span class="lab">Boss</span><span class="val boss">Prismarch Seraph</span></div>
+          <div class="row"><span class="lab">Boss HP</span><span class="val">90,000</span></div>
+          <div class="row"><span class="lab">Unlock</span><span class="val">900,000 Gold</span></div>
+        </div>
+      </article>
+      <article class="biome" style="--c:var(--cyber);--c2:var(--cyber)">
+        <span class="biome-idx">Rift 04 · Endgame</span>
+        <h3>Cyber-Abyss</h3>
+        <p class="vibe">A digital void — neon circuitry canyons, glitching geometry, data-rain, closing dark.</p>
+        <div class="rows">
+          <div class="row"><span class="lab">Boss</span><span class="val boss">Omega Null</span></div>
+          <div class="row"><span class="lab">Boss HP</span><span class="val">540,000</span></div>
+          <div class="row"><span class="lab">Unlock</span><span class="val">30,000,000 Gold</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="loop">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="eyebrow">Core Loop</p>
+      <h2 class="sec">The 30-Second Hook</h2>
+      <p class="sec-lead">Swing, earn, hatch, get stronger, swing faster. The loop that keeps a session going — with a fusion chase and rebirth prestige stacked underneath it.</p>
+    </div>
+    <div class="loop">
+      <div class="loop-step"><div class="step-n">Loop · 01</div><h4>Break &amp; Battle</h4><p>Smash resource nodes and slay enemies. Damage = weapon + your equipped pets.</p><div class="arrow">→</div></div>
+      <div class="loop-step"><div class="step-n">Loop · 02</div><h4>Hatch Pets</h4><p>Spend coins on eggs. Weighted odds down to 0.5% Mythic — the dopamine engine.</p><div class="arrow">→</div></div>
+      <div class="loop-step"><div class="step-n">Loop · 03</div><h4>Fuse &amp; Equip</h4><p>5 pets → Golden → Rainbow. Stack up to 6 for a permanent damage spike.</p><div class="arrow">→</div></div>
+      <div class="loop-step"><div class="step-n">Loop · 04</div><h4>Rebirth</h4><p>Reset for permanent coin &amp; luck multipliers. Punch deeper into the next rift.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="art">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="eyebrow">Key Art Direction</p>
+      <h2 class="sec">Icon &amp; Thumbnail Brief</h2>
+      <p class="sec-lead">On Roblox, the icon and thumbnails decide more than half your click-through. These are art-direction mockups — the composition, palette, and energy to hand your artist. Swap the placeholder forms for a rendered hero pet.</p>
+    </div>
+    <div class="art-grid">
+      <div>
+        <div class="icon-card">
+          <canvas id="icon" width="512" height="512"></canvas>
+          <div class="cap">Game Icon · 512×512 · concept</div>
+        </div>
+      </div>
+      <div>
+        <div class="thumbs">
+          <div class="thumb t1">
+            <span class="flag">New Update</span>
+            <div>
+              <div class="big">CROSS THE <span>RIFT</span></div>
+              <div class="sub">Hatch a Mythic in Rift 1 · Free Egg on join</div>
+            </div>
+            <span class="note">Thumbnail A · 1920×1080</span>
+          </div>
+          <div class="thumb t2">
+            <span class="flag">Fuse Update</span>
+            <div>
+              <div class="big">RAINBOW <span>PETS</span> ARE HERE</div>
+              <div class="sub">Fuse 25 pets → one 6.25× beast</div>
+            </div>
+            <span class="note">Thumbnail B · 1920×1080</span>
+          </div>
+        </div>
+        <div class="spec">
+          <h4>The brief, in five rules</h4>
+          <ul>
+            <li><b>One hero pet, huge.</b> A single expressive creature fills 55–65% of the icon frame — big eyes, gold rim-light. Roblox players click faces, not scenes.</li>
+            <li><b>The rift is the backdrop.</b> A vertical spectrum tear (green→gold→violet) behind the pet ties every asset to the brand and reads at thumbnail size.</li>
+            <li><b>Gold = value.</b> Reserve the gold accent for loot sparkle and the pet's rim. It's the through-color across icon, UI, and thumbnails.</li>
+            <li><b>Thumbnails sell the update,</b> not the game — "Rainbow Pets Are Here," "New Rift," "2× Luck Weekend." Refresh them every patch to re-trigger discovery.</li>
+            <li><b>Deep violet-black ground</b> (#0B0714) everywhere — it makes the neon biome colors pop and keeps the whole store presence unmistakably one game.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="money">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="eyebrow">Monetization</p>
+      <h2 class="sec">Priced to Convert, Tuned to Stay Fair</h2>
+      <p class="sec-lead">Four gamepasses and a nine-SKU product ladder — anchored by a 99-Robux Starter Pack and topped by whale-tier vaults. Every price sits on a known Robux psychological breakpoint.</p>
+    </div>
+    <div class="price-cols">
+      <div class="price-group">
+        <h3>Gamepasses</h3>
+        <p class="gsub">One-time · permanent</p>
+
+        <div class="item">
+          <div class="nm">2× Coins</div><div class="robux">199</div>
+          <div class="why">The first buy most players make — doubles all gold forever. Cheap enough to feel casual, the gateway purchase.</div>
+        </div>
+        <div class="item">
+          <div class="nm">VIP Luck</div><div class="robux">249</div>
+          <div class="why">Rare/Epic/Mythic odds ×1.5. Sold straight from the egg screen, next to the base odds — converts hatch frustration.</div>
+        </div>
+        <div class="item">
+          <div class="nm">+2 Pet Slots</div><div class="robux">299</div>
+          <div class="why">Equip 6 pets instead of 4. Priced above Luck because it's a direct, visible power spike for engaged players.</div>
+        </div>
+        <div class="item">
+          <div class="nm">Auto-Hatch</div><div class="robux">349</div>
+          <div class="why">AFK re-hatching. The retention-cohort pass — only valuable to players already hatching in volume, so it prices highest.</div>
+        </div>
+      </div>
+
+      <div class="price-group">
+        <h3>Developer Products</h3>
+        <p class="gsub">Repeatable · consumable</p>
+
+        <div class="item">
+          <div class="nm">Starter Pack <span style="color:var(--gold);font-family:var(--font-mono);font-size:.7rem">· ONE-TIME</span></div><div class="robux">99</div>
+          <div class="why">2,500 coins + 25 gems + a Mega Egg Roll. The 99 R$ first-session anchor — the highest-value impulse buy in the game.</div>
+        </div>
+        <div class="item"><div class="nm">100 Gems</div><div class="robux">149</div><div class="why">Feeds the Royal Egg gem sink &amp; fusion fees.</div></div>
+        <div class="item"><div class="nm">5,000 Coins</div><div class="robux">399</div><div class="why">Best-value coin pack — sold at the Magma Core zone wall.</div></div>
+        <div class="item"><div class="nm">50,000 Coins</div><div class="robux">1499</div><div class="why">Skip-the-grind whale pack for zone unlocks.</div></div>
+        <div class="item"><div class="nm">1,000 Gems</div><div class="robux">999</div><div class="why">The gem vault — fuels Rainbow-tier fusion chases.</div></div>
+        <div class="item"><div class="nm">Mega Egg Roll · 2× Offline · small coins</div><div class="robux">25–149</div><div class="why">Contextual impulse SKUs — the 2× Offline is prompted only on the welcome-back screen.</div></div>
+      </div>
+    </div>
+    <div class="fair">
+      <b>Fair-play design.</b> Nothing is locked behind Robux. Every pet, zone, weapon, and fusion is reachable free — purchases buy <i>speed and convenience</i>, not exclusive power. Whales climb the same ladder faster; free players never hit a wall they can't grind through. That's what keeps a sim's rating high enough to stay in the algorithm.
+    </div>
+  </div>
+</section>
+
+<section class="band" id="store">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="eyebrow">Store Listing</p>
+      <h2 class="sec">Paste-Ready Description</h2>
+      <p class="sec-lead">Drop this straight into the Roblox experience description. First line is the hook; the group CTA drives the +10% coins bonus and community joins.</p>
+    </div>
+    <div class="copybox">
+      <div class="bar">
+        <span class="t">experience-description.txt</span>
+        <button class="copybtn" id="copyBtn" type="button">Copy</button>
+      </div>
+      <pre id="storeCopy">🌌 TEAR OPEN THE RIFT in Rift Tamer — hatch pets, smash loot, and battle bosses across 4 wild worlds!
+
+⚔️ Break nodes &amp; defeat enemies to earn Gold
+🥚 Hatch 13 pets — can YOU pull a 0.5% Mythic?
+🌈 FUSE pets into Golden &amp; Rainbow beasts (6.25× power!)
+🔁 Rebirth for permanent Coin &amp; Luck multipliers
+🗺️ Unlock 4 Rifts: Mystic Forest → Magma Core → Crystal Skyway → Cyber-Abyss
+🤝 TRADE pets with friends · 🏆 Top the global leaderboards
+
+✨ NEW players get a FREE egg + daily rewards!
+👑 Join the group for +10% Coins &amp; daily Gems!
+
+⭐ Like &amp; Favorite to help us open the next Rift!</pre>
+    </div>
+    <div class="tags">
+      <span class="tag">#Simulator</span><span class="tag">#Pets</span><span class="tag">#PetSimulator</span>
+      <span class="tag">#RPG</span><span class="tag">#Hatching</span><span class="tag">#Loot</span>
+      <span class="tag">#Trading</span><span class="tag">#Rebirth</span><span class="tag">#Adventure</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <p class="eyebrow">Launch Status</p>
+        <div class="foot-status" style="margin-top:16px">
+          <div class="fs-row done"><span class="tick">✓</span><span><b>Full game code</b> — 30 systems, data-safe, dupe-protected, pushed</span></div>
+          <div class="fs-row done"><span class="tick">✓</span><span><b>Monetization</b> — 4 passes + 9 products wired through ProcessReceipt</span></div>
+          <div class="fs-row done"><span class="tick">✓</span><span><b>Brand &amp; naming</b> — Rift Tamer identity, this kit, store copy</span></div>
+          <div class="fs-row todo"><span class="tick">◷</span><span><b>Build the maps</b> — 4 biomes per the spec doc (Studio work)</span></div>
+          <div class="fs-row todo"><span class="tick">◷</span><span><b>Paste real IDs</b> — passes, products, badges, group</span></div>
+          <div class="fs-row todo"><span class="tick">◷</span><span><b>Playtest &amp; publish</b> — 2-account trade test, then ship</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="foot-mark">Rift Tamer</div>
+        <p style="color:var(--mut); font-size:.92rem; margin:8px 0 0">Pet &amp; Loot Simulator</p>
+        <p class="foot-note">Brand kit · v1 · repo: kevindm1989-afk/nightfall<br>branch: claude/roblox-loot-explore-rpg-88rxg3</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- ambient rift seam ---------- */
+  var canvas = document.getElementById("rift");
+  var ctx = canvas.getContext("2d");
+  var W, H, DPR;
+  var biomeColors = [ [79,217,138], [255,90,56], [143,182,255], [199,99,255] ];
+  var embers = [];
+
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * DPR; canvas.height = H * DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  function currentColor(){
+    // blend biome color by scroll progress through the page
+    var max = Math.max(1, document.body.scrollHeight - window.innerHeight);
+    var p = Math.min(1, Math.max(0, window.scrollY / max)) * (biomeColors.length - 1);
+    var i = Math.floor(p), f = p - i;
+    var a = biomeColors[i], b = biomeColors[Math.min(biomeColors.length-1, i+1)];
+    return [ a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f ];
+  }
+
+  function seamX(y, t){
+    // jagged vertical tear on the right third, wandering with y and time
+    var base = W * 0.82;
+    return base
+      + Math.sin(y*0.010 + t*0.6) * 26
+      + Math.sin(y*0.031 + t*1.1) * 12
+      + Math.sin(y*0.062) * 6;
+  }
+
+  for(var i=0;i<70;i++){
+    embers.push({ y:Math.random(), off:Math.random()*40-20, spd:0.02+Math.random()*0.05, r:0.6+Math.random()*1.8, ph:Math.random()*6.28 });
+  }
+
+  function frame(t){
+    t *= 0.001;
+    ctx.clearRect(0,0,W,H);
+    var c = currentColor();
+    var rgb = "rgba("+((c[0])|0)+","+((c[1])|0)+","+((c[2])|0);
+
+    // soft glow column
+    var cx = seamX(H*0.5, t);
+    var grad = ctx.createLinearGradient(cx-120,0,cx+120,0);
+    grad.addColorStop(0, rgb+",0)");
+    grad.addColorStop(0.5, rgb+",0.16)");
+    grad.addColorStop(1, rgb+",0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(cx-120,0,240,H);
+
+    // the bright seam
+    ctx.beginPath();
+    for(var y=0; y<=H; y+=8){
+      var x = seamX(y,t);
+      if(y===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle = rgb+",0.85)";
+    ctx.lineWidth = 2.4;
+    ctx.shadowColor = rgb+",0.9)";
+    ctx.shadowBlur = 22;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // embers drifting up along the seam
+    for(var k=0;k<embers.length;k++){
+      var e = embers[k];
+      if(!reduce){ e.y -= e.spd*0.004; if(e.y < -0.02) e.y = 1.02; }
+      var yy = e.y * H;
+      var xx = seamX(yy, t) + e.off + Math.sin(t*1.5 + e.ph)*8;
+      var al = 0.5 * Math.sin(e.y*Math.PI); // fade at ends
+      if(al < 0) al = 0;
+      ctx.beginPath();
+      ctx.arc(xx, yy, e.r, 0, 6.283);
+      ctx.fillStyle = rgb+","+al.toFixed(3)+")";
+      ctx.fill();
+    }
+
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  if(reduce){ frame(0); } else { requestAnimationFrame(frame); }
+  window.addEventListener("scroll", function(){ if(reduce) frame(0); }, {passive:true});
+
+  /* ---------- game icon concept render ---------- */
+  var ic = document.getElementById("icon");
+  var g = ic.getContext("2d");
+  (function drawIcon(){
+    var S = 512;
+    // background
+    var bg = g.createRadialGradient(S*0.5,S*0.42,40, S*0.5,S*0.5,S*0.75);
+    bg.addColorStop(0,"#1A1030"); bg.addColorStop(1,"#08050F");
+    g.fillStyle = bg; g.fillRect(0,0,S,S);
+
+    // spectrum rift tear (vertical, center-left behind pet)
+    var rx = S*0.5;
+    g.save();
+    var seam = g.createLinearGradient(0,0,0,S);
+    seam.addColorStop(0.00,"#4FD98A");
+    seam.addColorStop(0.35,"#8FB6FF");
+    seam.addColorStop(0.55,"#FFC23D");
+    seam.addColorStop(0.75,"#FF5A38");
+    seam.addColorStop(1.00,"#C763FF");
+    g.globalAlpha = 0.9;
+    g.beginPath();
+    for(var y=0;y<=S;y+=6){
+      var x = rx + Math.sin(y*0.02)*22 + Math.sin(y*0.05)*10;
+      var w = 30 + Math.sin(y*0.03)*12;
+      if(y===0) g.moveTo(x-w,y); else g.lineTo(x-w,y);
+    }
+    for(var y2=S;y2>=0;y2-=6){
+      var x2 = rx + Math.sin(y2*0.02)*22 + Math.sin(y2*0.05)*10;
+      var w2 = 30 + Math.sin(y2*0.03)*12;
+      g.lineTo(x2+w2,y2);
+    }
+    g.closePath();
+    g.fillStyle = seam;
+    g.shadowColor = "rgba(199,99,255,0.8)"; g.shadowBlur = 60;
+    g.fill();
+    g.restore();
+
+    // sparkles / loot
+    g.fillStyle = "#FFC23D";
+    var sp = [[120,150,3],[400,120,4],[150,380,2.5],[420,360,3],[90,260,2]];
+    for(var s=0;s<sp.length;s++){
+      g.save(); g.shadowColor="#FFC23D"; g.shadowBlur=16;
+      g.beginPath(); g.arc(sp[s][0],sp[s][1],sp[s][2],0,6.283); g.fill(); g.restore();
+    }
+
+    // hero pet silhouette (chunky, big-eyed) — placeholder form, gold rim
+    var pcx = S*0.5, pcy = S*0.60, br = 118;
+    // body
+    g.save();
+    g.shadowColor = "rgba(0,0,0,0.5)"; g.shadowBlur = 30; g.shadowOffsetY = 10;
+    var body = g.createLinearGradient(pcx,pcy-br,pcx,pcy+br);
+    body.addColorStop(0,"#2A2140"); body.addColorStop(1,"#140E24");
+    g.fillStyle = body;
+    g.beginPath(); g.arc(pcx,pcy,br,0,6.283); g.fill();
+    g.restore();
+    // ears
+    g.fillStyle = "#22193A";
+    function ear(ex){ g.beginPath(); g.moveTo(ex-30, pcy-br+30); g.quadraticCurveTo(ex-14,pcy-br-58, ex+18,pcy-br+8); g.closePath(); g.fill(); }
+    ear(pcx-58); ear(pcx+92);
+    // gold rim light
+    g.strokeStyle = "#FFC23D"; g.lineWidth = 6;
+    g.shadowColor="#FFC23D"; g.shadowBlur=22;
+    g.beginPath(); g.arc(pcx,pcy,br,Math.PI*0.15,Math.PI*0.95); g.stroke();
+    g.shadowBlur=0;
+    // eyes
+    g.fillStyle = "#EDE7FA";
+    g.beginPath(); g.arc(pcx-42,pcy-16,26,0,6.283); g.fill();
+    g.beginPath(); g.arc(pcx+42,pcy-16,26,0,6.283); g.fill();
+    g.fillStyle = "#0B0714";
+    g.beginPath(); g.arc(pcx-36,pcy-12,12,0,6.283); g.fill();
+    g.beginPath(); g.arc(pcx+48,pcy-12,12,0,6.283); g.fill();
+    // eye glints
+    g.fillStyle="#8FB6FF";
+    g.beginPath(); g.arc(pcx-40,pcy-18,4,0,6.283); g.fill();
+    g.beginPath(); g.arc(pcx+44,pcy-18,4,0,6.283); g.fill();
+
+    // vignette
+    var vig = g.createRadialGradient(S/2,S/2,S*0.3, S/2,S/2,S*0.72);
+    vig.addColorStop(0,"rgba(0,0,0,0)"); vig.addColorStop(1,"rgba(0,0,0,0.55)");
+    g.fillStyle = vig; g.fillRect(0,0,S,S);
+  })();
+
+  /* ---------- copy button ---------- */
+  var btn = document.getElementById("copyBtn");
+  btn.addEventListener("click", function(){
+    var txt = document.getElementById("storeCopy").innerText;
+    var done = function(){ btn.textContent = "Copied ✓"; setTimeout(function(){ btn.textContent="Copy"; },1600); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done, function(){ done(); });
+    } else {
+      var ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); }catch(e){} document.body.removeChild(ta); done();
+    }
+  });
+})();
+</script>
