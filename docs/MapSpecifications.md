@@ -1,4 +1,4 @@
-# Nightfall — 4-Biome Modular Map Specifications
+# Rift Tamer — 4-Biome Modular Map Specifications
 
 World-building design sheet for the Loot & Explore RPG. Every value here is
 production-final and matches `src/ReplicatedStorage/Config/GameConfig.lua`

@@ -1,4 +1,4 @@
-# Nightfall — Loot & Explore RPG Simulator (Roblox)
+# Rift Tamer: Pet & Loot Simulator (Roblox)
 
 A complete, production-ready Roblox simulator: break resource nodes, fight
 enemies and zone bosses, hatch pets from weighted eggs, rebirth for permanent
@@ -76,7 +76,7 @@ docs/
 ## Build & Deploy
 
 1. Install [Rojo](https://rojo.space) 7+.
-2. `rojo build -o Nightfall.rbxlx` (or `rojo serve` + the Studio plugin).
+2. `rojo build -o RiftTamer.rbxlx` (or `rojo serve` + the Studio plugin).
 3. In Studio, enable **Game Settings → Security → Enable Studio Access to API
    Services** so DataStores work in test sessions.
 4. Create your Developer Products and Gamepasses on the Creator Dashboard,

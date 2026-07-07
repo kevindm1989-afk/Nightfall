@@ -163,7 +163,7 @@ shopFrame.Visible = false
 shopFrame.Parent = screenGui
 round(shopFrame, 16)
 
-label(shopFrame, "NIGHTFALL SHOP", UDim2.new(0.6, 0, 0, 40), UDim2.new(0.2, 0, 0, 8))
+label(shopFrame, "RIFT TAMER SHOP", UDim2.new(0.6, 0, 0, 40), UDim2.new(0.2, 0, 0, 8))
 
 local closeButton = button(shopFrame, "X", UDim2.new(0, 36, 0, 36),
 	UDim2.new(1, -44, 0, 8), Color3.fromRGB(220, 80, 80))

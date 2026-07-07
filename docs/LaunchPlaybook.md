@@ -1,4 +1,4 @@
-# Nightfall — Launch Playbook
+# Rift Tamer — Launch Playbook
 
 The code is finished. This is the ordered checklist that takes the repo to a
 published, earning game. Work top to bottom; don't skip the playtest phase.
@@ -22,7 +22,7 @@ Everything on the Creator Dashboard (create.roblox.com), then paste IDs into
 - [ ] **Group**: create your Roblox group, paste ID into `GameConfig.Group.GroupId`
 - [ ] **Music**: replace the 4 placeholder `MusicId`s in `GameConfig.ZoneAmbience`
       with licensed tracks from the Creator Marketplace audio library
-- [ ] `rojo build -o Nightfall.rbxlx`, open in Studio
+- [ ] `rojo build -o RiftTamer.rbxlx`, open in Studio
 - [ ] Game Settings → Security → **Enable Studio Access to API Services**
       (DataStores will silently fail without this)
 - [ ] Game Settings → Avatar → R15 (WeaponVisualizer grips expect RightHand,
